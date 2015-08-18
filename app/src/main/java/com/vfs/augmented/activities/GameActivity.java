@@ -20,6 +20,7 @@ public class GameActivity extends ARViewActivity
     protected int getGUILayout()
     {
         return R.layout.game_activity;
+        //poop
     }
 
     @Override
