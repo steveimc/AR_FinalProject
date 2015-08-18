@@ -2,4 +2,4 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android" >
     <size android:height="1dip" />
     <solid android:color="@color/metaiocolor" />
-</shape><!-- From: file:/Users/steveimc/Desktop/AR_FinalProject/metaioSDK/res/drawable/divider.xml --><!-- From: file:/Users/steveimc/Desktop/AR_FinalProject/metaioSDK/build/intermediates/bundles/debug/res/drawable/divider.xml -->
+</shape><!-- From: file:/Users/andreia/AndroidStudioProjects/FinalProject/AR_FinalProject/metaioSDK/res/drawable/divider.xml --><!-- From: file:/Users/andreia/AndroidStudioProjects/FinalProject/AR_FinalProject/metaioSDK/build/intermediates/bundles/debug/res/drawable/divider.xml -->

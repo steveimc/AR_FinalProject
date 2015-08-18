@@ -9,4 +9,4 @@
     <item android:drawable="@drawable/button_green_default" android:state_focused="true"/>
     <item android:drawable="@drawable/button_green_default"/>
 
-</selector><!-- From: file:/Users/steveimc/Desktop/AR_FinalProject/metaioSDK/res/drawable/button_detail_green.xml --><!-- From: file:/Users/steveimc/Desktop/AR_FinalProject/metaioSDK/build/intermediates/bundles/debug/res/drawable/button_detail_green.xml -->
+</selector><!-- From: file:/Users/andreia/AndroidStudioProjects/FinalProject/AR_FinalProject/metaioSDK/res/drawable/button_detail_green.xml --><!-- From: file:/Users/andreia/AndroidStudioProjects/FinalProject/AR_FinalProject/metaioSDK/build/intermediates/bundles/debug/res/drawable/button_detail_green.xml -->

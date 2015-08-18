@@ -10,4 +10,4 @@
     <item android:drawable="@drawable/web_back_dis" android:state_enabled="false"/>
     <item android:drawable="@drawable/web_back" android:state_focused="true"/>
     <item android:drawable="@drawable/web_back"/>
-</selector><!-- From: file:/Users/steveimc/Desktop/AR_FinalProject/metaioSDK/res/drawable/selector_web_back.xml --><!-- From: file:/Users/steveimc/Desktop/AR_FinalProject/metaioSDK/build/intermediates/bundles/debug/res/drawable/selector_web_back.xml -->
+</selector><!-- From: file:/Users/andreia/AndroidStudioProjects/FinalProject/AR_FinalProject/metaioSDK/res/drawable/selector_web_back.xml --><!-- From: file:/Users/andreia/AndroidStudioProjects/FinalProject/AR_FinalProject/metaioSDK/build/intermediates/bundles/debug/res/drawable/selector_web_back.xml -->
