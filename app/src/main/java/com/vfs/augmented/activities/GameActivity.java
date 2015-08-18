@@ -1,22 +1,49 @@
 package com.vfs.augmented.activities;
 
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.metaio.sdk.ARViewActivity;
 import com.metaio.sdk.MetaioDebug;
 import com.metaio.sdk.jni.IGeometry;
 import com.metaio.sdk.jni.IMetaioSDKCallback;
-import com.metaio.sdk.jni.TrackingValues;
 import com.metaio.sdk.jni.TrackingValuesVector;
 import com.metaio.tools.io.AssetsManager;
+import com.vfs.augmented.AppConstants;
+import com.vfs.augmented.BluetoothApplication;
 import com.vfs.augmented.R;
+import com.vfs.augmented.bluetooth.BTCReceiver;
+import com.vfs.augmented.bluetooth.BluetoothController;
+import com.vfs.augmented.game.Game;
 
 import java.io.File;
 
-public class GameActivity extends ARViewActivity
+public class GameActivity extends ARViewActivity implements BTCReceiver
 {
+    BluetoothController _btController;
+    Game                _game;
+    boolean             _gameCanStart = false;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.select_activity);
+
+        _btController = ((BluetoothApplication)this.getApplicationContext())._bluetoothController;
+        _game = ((BluetoothApplication)this.getApplicationContext())._game;
+        _btController.changeActivity(this, this);
+
+        // Tell other player we are in this activity
+        _btController.sendMessage(AppConstants.PLAYER_IS_READY);
+
+        // If the other player is in this activity
+        if(((BluetoothApplication)this.getApplicationContext())._enemyIsInGameActivity)
+            _gameCanStart = true;
+    }
 
     private IMetaioSDKCallback metaioCallback;
 
@@ -83,6 +110,18 @@ public class GameActivity extends ARViewActivity
     protected void onGeometryTouched(IGeometry geometry)
     {
 
+    }
+
+    @Override
+    public void receiveMsg(String msg)
+    {
+        switch (msg)
+        {
+            case AppConstants.PLAYER_IS_READY:
+                _gameCanStart = true;
+                Toast.makeText(this, "other player in. My Monster: " + _game.getMyPlayer().monsterType, Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 
     private class MetaioSDKCallbackHandler extends IMetaioSDKCallback

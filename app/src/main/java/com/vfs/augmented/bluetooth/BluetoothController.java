@@ -191,10 +191,7 @@ public class BluetoothController
                     {
                         ((BluetoothApplication) _mainActivity.getApplicationContext())._enemyIsInGameActivity = true;
                     }
-                    else
-                    {
-                        _activityReceiver.receiveMsg(readMessage);
-                    }
+                    _activityReceiver.receiveMsg(readMessage);
                     //mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
