@@ -8,6 +8,8 @@ import com.metaio.sdk.ARViewActivity;
 import com.metaio.sdk.MetaioDebug;
 import com.metaio.sdk.jni.IGeometry;
 import com.metaio.sdk.jni.IMetaioSDKCallback;
+import com.metaio.sdk.jni.TrackingValues;
+import com.metaio.sdk.jni.TrackingValuesVector;
 import com.metaio.tools.io.AssetsManager;
 import com.vfs.augmented.R;
 
@@ -16,10 +18,18 @@ import java.io.File;
 public class GameActivity extends ARViewActivity
 {
 
+    private IMetaioSDKCallback metaioCallback;
+
     @Override
     protected int getGUILayout()
     {
         return R.layout.game_activity;
+    }
+
+    @Override
+    protected IMetaioSDKCallback getMetaioSDKCallbackHandler()
+    {
+        return new MetaioSDKCallbackHandler();
     }
 
     @Override
@@ -39,6 +49,9 @@ public class GameActivity extends ARViewActivity
             File metaioManModel = AssetsManager.getAssetPathAsFile(getApplicationContext(), "models/metaioman.md2");
             File cube = AssetsManager.getAssetPathAsFile(getApplicationContext(), "models/cube.obj");
 
+            metaioCallback = getMetaioSDKCallbackHandler();
+            metaioSDK.registerCallback(metaioCallback);
+
             if (metaioManModel != null)
             {
                 // Loading 3D geometry
@@ -53,6 +66,7 @@ public class GameActivity extends ARViewActivity
 
                     geometry.setCoordinateSystemID(1);
                     geometry2.setCoordinateSystemID(2);
+
 
                 }
                 else
@@ -71,10 +85,21 @@ public class GameActivity extends ARViewActivity
 
     }
 
-    @Override
-    protected IMetaioSDKCallback getMetaioSDKCallbackHandler()
+    private class MetaioSDKCallbackHandler extends IMetaioSDKCallback
     {
-        return null;
+        @Override
+        public void onTrackingEvent(TrackingValuesVector trackingValues)
+        {
+            /*
+            Log.i("xmetaio", "tracking event: " + trackingValues.size());
+            for (int i=0; i<trackingValues.size(); i++)
+            {
+                final TrackingValues v = trackingValues.get(i);
+                MetaioDebug.log("Tracking state for COS " + v.getCoordinateSystemID() + " is " + v.getState());
+                Log.i("xmetaio", "Tracking state for COS " + v.getCoordinateSystemID() + " is " + v.getState());
+            }
+            */
+        }
     }
 
     @Override
