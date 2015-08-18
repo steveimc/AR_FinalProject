@@ -1,4 +1,4 @@
-package com.vfs.augmented;
+package com.vfs.augmented.game;
 
 /**
  * Created by steveimc on 8/17/15.

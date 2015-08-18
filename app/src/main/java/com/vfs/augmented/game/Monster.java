@@ -1,4 +1,4 @@
-package com.vfs.augmented;
+package com.vfs.augmented.game;
 
 import android.content.Context;
 
