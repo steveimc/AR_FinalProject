@@ -6,15 +6,34 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.vfs.augmented.BluetoothApplication;
 import com.vfs.augmented.R;
+import com.vfs.augmented.bluetooth.BTCReceiver;
+import com.vfs.augmented.bluetooth.BluetoothController;
 
-public class SelectActivity extends ActionBarActivity
+public class SelectActivity extends ActionBarActivity implements BTCReceiver
 {
+    BluetoothController _btController;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.select_activity);
+
+        _btController = ((BluetoothApplication)this.getApplicationContext())._bluetoothController;
+        _btController.changeActivity(this, this);
+    }
+
+    @Override
+    public void receiveMsg(String msg)
+    {
+
+    }
+
+    private void sendData(String msg)
+    {
+        
     }
 
     public void onMonster1(View view)
@@ -48,4 +67,6 @@ public class SelectActivity extends ActionBarActivity
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }
