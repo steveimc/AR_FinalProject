@@ -8,11 +8,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.vfs.augmented.AppConstants;
 import com.vfs.augmented.BluetoothApplication;
 import com.vfs.augmented.R;
-import com.vfs.augmented.bluetooth.BTCReceiver;
+import com.vfs.augmented.bluetooth.interfaces.BTCReceiver;
 import com.vfs.augmented.bluetooth.BluetoothController;
+import com.vfs.augmented.bluetooth.packet.Packet;
+import com.vfs.augmented.bluetooth.packet.PacketCodes;
 import com.vfs.augmented.game.Game;
 import com.vfs.augmented.game.Monster;
 import com.vfs.augmented.game.Player;
@@ -37,26 +38,28 @@ public class SelectActivity extends ActionBarActivity implements BTCReceiver
     Player _enemyPlayer;
 
     @Override
-    public void receiveMsg(String msg)
+    public void receivePacket(Packet packet)
     {
         if (_myPlayer != null)
             return;
 
-        switch (msg)
+        switch (packet.code)
         {
-            case AppConstants.MONSTER1:
-                //Enemy picked M1
-                _myPlayer       = new Player(Monster.MonsterType.MONSTER_TWO);
-                _enemyPlayer    = new Player(Monster.MonsterType.MONSTER_ONE);
-                createGame();
-                break;
-
-            case AppConstants.MONSTER2:
-                //Enemy picked M2
-                _myPlayer       = new Player(Monster.MonsterType.MONSTER_ONE);
-                _enemyPlayer    = new Player(Monster.MonsterType.MONSTER_TWO);
-                createGame();
-                break;
+            case PacketCodes.PICK_MONSTER:
+                if(packet.value.equals(PacketCodes.MONSTER1))
+                {
+                    //Enemy picked M1
+                    _myPlayer       = new Player(Monster.MonsterType.MONSTER_TWO);
+                    _enemyPlayer    = new Player(Monster.MonsterType.MONSTER_ONE);
+                    createGame();
+                }
+                else
+                {
+                    //Enemy picked M2
+                    _myPlayer       = new Player(Monster.MonsterType.MONSTER_ONE);
+                    _enemyPlayer    = new Player(Monster.MonsterType.MONSTER_TWO);
+                    createGame();
+                }
         }
     }
 
@@ -64,8 +67,7 @@ public class SelectActivity extends ActionBarActivity implements BTCReceiver
     {
         if(_myPlayer == null)
         {
-            _btController.sendMessage(AppConstants.MONSTER1);
-
+            _btController.sendMessage(new Packet(PacketCodes.PICK_MONSTER, PacketCodes.MONSTER1));
             _myPlayer       = new Player(Monster.MonsterType.MONSTER_ONE);
             _enemyPlayer    = new Player(Monster.MonsterType.MONSTER_TWO);
             createGame();
@@ -76,7 +78,7 @@ public class SelectActivity extends ActionBarActivity implements BTCReceiver
     {
         if(_myPlayer == null)
         {
-            _btController.sendMessage(AppConstants.MONSTER2);
+            _btController.sendMessage(new Packet(PacketCodes.PICK_MONSTER, PacketCodes.MONSTER2));
 
             _myPlayer       = new Player(Monster.MonsterType.MONSTER_TWO);
             _enemyPlayer    = new Player(Monster.MonsterType.MONSTER_ONE);

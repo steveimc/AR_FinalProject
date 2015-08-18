@@ -12,11 +12,12 @@ import com.metaio.sdk.jni.IGeometry;
 import com.metaio.sdk.jni.IMetaioSDKCallback;
 import com.metaio.sdk.jni.TrackingValuesVector;
 import com.metaio.tools.io.AssetsManager;
-import com.vfs.augmented.AppConstants;
 import com.vfs.augmented.BluetoothApplication;
 import com.vfs.augmented.R;
-import com.vfs.augmented.bluetooth.BTCReceiver;
+import com.vfs.augmented.bluetooth.interfaces.BTCReceiver;
 import com.vfs.augmented.bluetooth.BluetoothController;
+import com.vfs.augmented.bluetooth.packet.Packet;
+import com.vfs.augmented.bluetooth.packet.PacketCodes;
 import com.vfs.augmented.game.Game;
 
 import java.io.File;
@@ -38,7 +39,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         _btController.changeActivity(this, this);
 
         // Tell other player we are in this activity
-        _btController.sendMessage(AppConstants.PLAYER_IS_READY);
+        _btController.sendMessage(new Packet(PacketCodes.PLAYER_IS_READY, ""));
 
         // If the other player is in this activity
         if(((BluetoothApplication)this.getApplicationContext())._enemyIsInGameActivity)
@@ -113,11 +114,11 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
     }
 
     @Override
-    public void receiveMsg(String msg)
+    public void receivePacket(Packet packet)
     {
-        switch (msg)
+        switch (packet.code)
         {
-            case AppConstants.PLAYER_IS_READY:
+            case PacketCodes.PLAYER_IS_READY:
                 _gameCanStart = true;
                 Toast.makeText(this, "other player in. My Monster: " + _game.getMyPlayer().monsterType, Toast.LENGTH_SHORT).show();
                 break;

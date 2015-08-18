@@ -9,6 +9,8 @@ public class Player
 
     public Monster monster;
     public int playerId;
+
+    public String username;
     public Monster.MonsterType monsterType;
 
     public Player(Monster.MonsterType pickedMonster)
