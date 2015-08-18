@@ -4,10 +4,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.vfs.augmented.R;
 
-public class SelectActivity extends ActionBarActivity {
+public class SelectActivity extends ActionBarActivity
+{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,6 +17,15 @@ public class SelectActivity extends ActionBarActivity {
         setContentView(R.layout.select_activity);
     }
 
+    public void onMonster1(View view)
+    {
+
+    }
+
+    public void onMonster2(View view)
+    {
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
