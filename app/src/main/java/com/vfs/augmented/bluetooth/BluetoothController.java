@@ -27,10 +27,11 @@ public class BluetoothController
     private BluetoothAdapter mBluetoothAdapter = null;
 
     private BluetoothChatService    mChatService = null;
-    BluetoothControllerReceiver _activityReceiver;
+    BTCReceiver _activityReceiver;
+    BTCConnectionCallback _connectionCallback;
 
     Activity _mainActivity;
-    public BluetoothController(Activity activity, BluetoothControllerReceiver receiver)
+    public BluetoothController(Activity activity, BTCReceiver receiver)
     {
         _mainActivity = activity;
         _activityReceiver = receiver;
@@ -43,10 +44,15 @@ public class BluetoothController
         }
     }
 
-    public void changeActivity (Activity newAct, BluetoothControllerReceiver newReceiver)
+    public void changeActivity (Activity newAct, BTCReceiver newReceiver)
     {
         _mainActivity = newAct;
         _activityReceiver = newReceiver;
+    }
+
+    public void addConnectionCallback(BTCConnectionCallback callback)
+    {
+        _connectionCallback = callback;
     }
 
     public void onActivityStart()
@@ -157,7 +163,7 @@ public class BluetoothController
                     switch (msg.arg1) {
                         case BluetoothChatService.STATE_CONNECTED:
                             setStatus("Connected to" + mConnectedDeviceName);
-                            //mConversationArrayAdapter.clear();
+                            _connectionCallback.onConnectedSuccessfully(mConnectedDeviceName);
                             break;
                         case BluetoothChatService.STATE_CONNECTING:
                             setStatus("connection");

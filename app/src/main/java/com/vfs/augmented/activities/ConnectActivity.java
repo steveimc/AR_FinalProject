@@ -2,19 +2,22 @@ package com.vfs.augmented.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.vfs.augmented.BluetoothApplication;
 import com.vfs.augmented.R;
+import com.vfs.augmented.bluetooth.BTCConnectionCallback;
+import com.vfs.augmented.bluetooth.BTCReceiver;
 import com.vfs.augmented.bluetooth.BluetoothController;
-import com.vfs.augmented.bluetooth.BluetoothControllerReceiver;
 import com.vfs.augmented.bluetooth.DeviceListActivity;
 
-public class ConnectActivity extends ActionBarActivity implements BluetoothControllerReceiver
+public class ConnectActivity extends ActionBarActivity implements BTCReceiver, BTCConnectionCallback
 {
     BluetoothController _btController;
 
@@ -27,6 +30,7 @@ public class ConnectActivity extends ActionBarActivity implements BluetoothContr
         ((BluetoothApplication)this.getApplicationContext())._bluetoothController = new BluetoothController(this, this);
         _btController = ((BluetoothApplication)this.getApplicationContext())._bluetoothController;
         _btController.onActivityStart();
+        _btController.addConnectionCallback(this);
     }
 
     @Override
@@ -112,5 +116,39 @@ public class ConnectActivity extends ActionBarActivity implements BluetoothContr
                             Toast.LENGTH_SHORT).show();
                 }
         }
+    }
+
+    @Override
+    public void onConnectedSuccessfully(String connectedDeviceName)
+    {
+        new Handler().postDelayed(new Runnable()
+        {
+            @Override
+            public void run() {
+                final Intent mainIntent = new Intent(ConnectActivity.this, SelectActivity.class);
+                ConnectActivity.this.startActivity(mainIntent);
+                ConnectActivity.this.finish();
+            }
+        }, 3000);
+    }
+
+    public void onEnableDiscoveryButton(View view)
+    {
+        // Ensure this device is discoverable by others
+        _btController.ensureDiscoverable();
+    }
+
+    public void onSecureConnectButton(View view)
+    {
+        // Launch the DeviceListActivity to see devices and do scan
+        Intent serverIntent = new Intent(this, DeviceListActivity.class);
+        startActivityForResult(serverIntent, BluetoothController.REQUEST_CONNECT_DEVICE_SECURE);
+    }
+
+    public void onInsecureConnectButton(View view)
+    {
+        // Launch the DeviceListActivity to see devices and do scan
+        Intent serverIntent = new Intent(this, DeviceListActivity.class);
+        startActivityForResult(serverIntent, BluetoothController.REQUEST_CONNECT_DEVICE_INSECURE);
     }
 }
