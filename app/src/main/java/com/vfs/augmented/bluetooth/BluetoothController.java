@@ -10,6 +10,9 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.vfs.augmented.AppConstants;
+import com.vfs.augmented.BluetoothApplication;
+
 /**
  * Created by andreia on 17/08/15.
  */
@@ -184,8 +187,14 @@ public class BluetoothController
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
-                    //showReceivedMessage(readMessage);
-                    _activityReceiver.receiveMsg(readMessage);
+                    if(readMessage.equals(AppConstants.PLAYER_IS_READY))
+                    {
+                        ((BluetoothApplication) _mainActivity.getApplicationContext())._enemyIsInGameActivity = true;
+                    }
+                    else
+                    {
+                        _activityReceiver.receiveMsg(readMessage);
+                    }
                     //mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:

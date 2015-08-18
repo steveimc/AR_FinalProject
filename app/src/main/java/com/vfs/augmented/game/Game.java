@@ -6,16 +6,26 @@ import com.vfs.augmented.game.Abilities.Moves;
  */
 public class Game
 {
-    private Player _player1;
-    private Player _player2;
+    private Player _myPlayer;
+    private Player _enemyPlayer;
 
     int _currentTurn = 0;
     int _movesPerTurn = 3;
 
-    public Game(Player p1, Player p2)
+    public Game(Player myPlayer, Player enemyPlayer)
     {
-        _player1 = p1;
-        _player2 = p2;
+        _myPlayer       = myPlayer;
+        _enemyPlayer    = enemyPlayer;
+    }
+
+    public Player getMyPlayer()
+    {
+        return _myPlayer;
+    }
+
+    public Player getEnemyPlayer()
+    {
+        return _enemyPlayer;
     }
 
     public void updateGame(int turn, Moves[] player1Moves, Moves[] player2Moves)

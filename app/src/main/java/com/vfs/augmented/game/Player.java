@@ -9,4 +9,10 @@ public class Player
 
     public Monster monster;
     public int playerId;
+    public Monster.MonsterType monsterType;
+
+    public Player(Monster.MonsterType pickedMonster)
+    {
+        monsterType = pickedMonster;
+    }
 }
