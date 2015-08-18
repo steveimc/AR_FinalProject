@@ -20,8 +20,6 @@ public class GameActivity extends ARViewActivity
     protected int getGUILayout()
     {
         return R.layout.game_activity;
-        //poop
-        //more poop
     }
 
     @Override
@@ -30,7 +28,7 @@ public class GameActivity extends ARViewActivity
         try
         {
             // Getting a file path for tracking configuration XML file
-            AssetsManager.extractAllAssets(this, false);
+            AssetsManager.extractAllAssets(this, true);
             File trackingConfigFile = AssetsManager.getAssetPathAsFile(getApplicationContext(), "TrackingData.xml");
 
             // Assigning tracking configuration
