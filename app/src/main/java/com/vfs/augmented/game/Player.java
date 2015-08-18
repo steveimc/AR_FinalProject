@@ -8,5 +8,5 @@ public class Player
     private final int lifes = 10;
 
     public Monster monster;
-    public int peerId;
+    public int playerId;
 }
