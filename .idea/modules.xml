@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Augmented.iml" filepath="$PROJECT_DIR$/Augmented.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AR_FinalProject.iml" filepath="$PROJECT_DIR$/AR_FinalProject.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/metaioSDK/metaioSDK.iml" filepath="$PROJECT_DIR$/metaioSDK/metaioSDK.iml" />
     </modules>
