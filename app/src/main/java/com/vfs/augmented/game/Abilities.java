@@ -5,8 +5,8 @@ package com.vfs.augmented.game;
  */
 public class Abilities
 {
-    private static int BASIC_DAMAGE = 100;
-    private static int SPECIAL_DAMAGE = 200;
+    private static int BASIC_DAMAGE = 1;
+    private static int SPECIAL_DAMAGE = 2;
 
     public static enum Moves
     {

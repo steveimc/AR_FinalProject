@@ -5,7 +5,7 @@ package com.vfs.augmented.game;
  */
 public class Player
 {
-    private final int HP = 1000;
+    private final int lifes = 10;
 
     public Monster monster;
     public int peerId;
