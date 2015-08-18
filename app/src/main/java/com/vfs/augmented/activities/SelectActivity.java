@@ -1,5 +1,6 @@
 package com.vfs.augmented.activities;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -19,12 +20,14 @@ public class SelectActivity extends ActionBarActivity
 
     public void onMonster1(View view)
     {
-
+        Intent intent = new Intent(SelectActivity.this,GameActivity.class);
+        startActivity(intent);
     }
 
     public void onMonster2(View view)
     {
-
+        Intent intent = new Intent(SelectActivity.this,GameActivity.class);
+        startActivity(intent);
     }
 
     @Override
