@@ -102,7 +102,6 @@ public class Game
     {
         // Show I LOSE in UI
         dealDamageToPlayer(_myPlayer); // Damage my char
-
     }
 
     // Called when animations are done
@@ -181,7 +180,12 @@ public class Game
     public void dealDamageToPlayer(Player player)
     {
         player.takeOneLife();
-        _gameActivity.updateHPView(true, player.getCurrentLifes());
+        boolean isOwner = false;
+
+        if(player == _myPlayer)
+            isOwner = true;
+
+        _gameActivity.updateHPView(isOwner, player.getCurrentLifes());
     }
 
 }
