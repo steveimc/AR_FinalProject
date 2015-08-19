@@ -292,7 +292,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
     public void dealDamageToMyPlayer (View view)
     {
-        _game.dealDamageToPlayer(true);
+        _game.dealDamageToPlayer(_game.getMyPlayer());
     }
 
 ///   UI    //////////////////////////////////////////////////////////////////////////////////
