@@ -7,31 +7,47 @@
     tools:context="com.vfs.augmented.activities.ConnectActivity">
 
     <Button
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Enable Discovery"
         android:id="@+id/button_discovery"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="110dp"
-        android:onClick="onEnableDiscoveryButton"/>
+        android:onClick="onEnableDiscoveryButton"
+        android:layout_above="@+id/button_connect_secure"
+        android:layout_alignStart="@+id/button_connect_secure" />
 
     <Button
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Secure Connect"
         android:id="@+id/button_connect_secure"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:onClick="onSecureConnectButton"/>
+        android:onClick="onSecureConnectButton"
+        android:layout_above="@+id/button_connect_insecure"
+        android:layout_centerHorizontal="true" />
 
     <Button
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Insecure Connect"
         android:id="@+id/button_connect_insecure"
-        android:layout_below="@+id/button_connect_secure"
+        android:onClick="onInsecureConnectButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/button_discovery" />
+
+    <TextView
+        android:text="FIND PLAYERS"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/connect_button_main"
+        android:background="@drawable/shape_circle"
+        android:gravity="center"
+        android:padding="10dp"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:onClick="onFindPlayers"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="45dp"
-        android:onClick="onInsecureConnectButton"/>
+        android:layout_marginTop="142dp" />
 </RelativeLayout>

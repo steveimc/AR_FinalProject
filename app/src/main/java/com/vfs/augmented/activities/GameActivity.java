@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
 import android.widget.Toast;
 
 import com.metaio.sdk.ARViewActivity;
@@ -19,6 +21,7 @@ import com.vfs.augmented.bluetooth.BluetoothController;
 import com.vfs.augmented.bluetooth.packet.Packet;
 import com.vfs.augmented.bluetooth.packet.PacketCodes;
 import com.vfs.augmented.game.Game;
+import com.vfs.augmented.game.Abilities.Moves;
 
 import java.io.File;
 
@@ -31,6 +34,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.select_activity);
 
@@ -108,21 +112,8 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
     }
 
     @Override
-    protected void onGeometryTouched(IGeometry geometry)
-    {
+    protected void onGeometryTouched(IGeometry geometry) {
 
-    }
-
-    @Override
-    public void receivePacket(Packet packet)
-    {
-        switch (packet.code)
-        {
-            case PacketCodes.PLAYER_IS_READY:
-                _gameCanStart = true;
-                Toast.makeText(this, "other player in. My Monster: " + _game.getMyPlayer().monsterType, Toast.LENGTH_SHORT).show();
-                break;
-        }
     }
 
     private class MetaioSDKCallbackHandler extends IMetaioSDKCallback
@@ -142,6 +133,88 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         }
     }
 
+    @Override
+    public void receivePacket(Packet packet)
+    {
+        switch (packet.code)
+        {
+            case PacketCodes.PLAYER_IS_READY:
+                _gameCanStart = true;
+                Toast.makeText(this, "other player in. My Monster: " + _game.getMyPlayer().monsterType, Toast.LENGTH_SHORT).show();
+                break;
+            case PacketCodes.PLAYER_MOVE:
+                doEnemyAttack(packet.value);
+                break;
+        }
+    }
+
+    private void doMove(Moves move)
+    {
+        switch (move)
+        {
+            case ATTACK:
+                _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_ATTACK));
+                doPlayerAttack("attack");
+                break;
+            case DEFEND:
+                _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_DEFEND));
+                doPlayerAttack("defend");
+                break;
+            case SPECIAL:
+                _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_SPECIAL));
+                doPlayerAttack("special");
+                break;
+        }
+    }
+
+    private void doPlayerAttack(String move)
+    {
+        Toast.makeText(this, "Me: " + move, Toast.LENGTH_SHORT).show();
+    }
+
+    private void doEnemyAttack(String moveCode)
+    {
+        String move = "";
+        switch (moveCode)
+        {
+            case PacketCodes.MOVE_ATTACK:
+                move = "attack";
+                break;
+            case PacketCodes.MOVE_DEFEND:
+                move = "defend";
+                break;
+            case PacketCodes.MOVE_SPECIAL:
+                move = "special";
+                break;
+        }
+        Toast.makeText(this, "Enemy: " + move, Toast.LENGTH_SHORT).show();
+    }
+
+///   BUTTONS    //////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+
+    public void onAttackButton(View view)
+    {
+        doMove(Moves.ATTACK);
+    }
+
+    public void onDefenseButton(View view)
+    {
+        doMove(Moves.DEFEND);
+    }
+
+    public void onSpecialButton(View view)
+    {
+        doMove(Moves.SPECIAL);
+    }
+
+    public void dealDamageToMyPlayer (View view)
+    {
+        _game.dealDamageToPlayer(true);
+    }
+
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {

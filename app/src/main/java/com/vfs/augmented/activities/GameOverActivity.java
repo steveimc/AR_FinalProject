@@ -1,16 +1,19 @@
 package com.vfs.augmented.activities;
 
+import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 
 import com.vfs.augmented.R;
 
-public class GameOverActivity extends ActionBarActivity {
+public class GameOverActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game_over_activity);
     }

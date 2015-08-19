@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,7 +23,7 @@ import com.vfs.augmented.bluetooth.DeviceListActivity;
 import com.vfs.augmented.bluetooth.packet.Packet;
 import com.vfs.augmented.bluetooth.packet.PacketCodes;
 
-public class ConnectActivity extends ActionBarActivity implements BTCReceiver, BTCConnectionCallback
+public class ConnectActivity extends Activity implements BTCReceiver, BTCConnectionCallback
 {
     BluetoothController _btController;
     Dialog              _acceptFightDialog;
@@ -31,6 +32,7 @@ public class ConnectActivity extends ActionBarActivity implements BTCReceiver, B
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.connect_activity);
 
@@ -39,6 +41,7 @@ public class ConnectActivity extends ActionBarActivity implements BTCReceiver, B
         _btController.onActivityStart();
         _btController.addConnectionCallback(this);
 
+        _btController.ensureDiscoverable();
         //askIfUserAcceptsBattle();
     }
 
@@ -88,7 +91,7 @@ public class ConnectActivity extends ActionBarActivity implements BTCReceiver, B
         }*/
         if(_thisPlayerInvited)
         {
-            _btController.sendMessage(new Packet(PacketCodes.PLAYER_NAME, "REAL_STAR_LORD"));
+            _btController.sendMessage(new Packet(PacketCodes.PLAYER_NAME, ((BluetoothApplication)this.getApplicationContext())._username));
         }
     }
 
@@ -133,6 +136,12 @@ public class ConnectActivity extends ActionBarActivity implements BTCReceiver, B
         acceptFightDialog.show();
     }
 
+    public void onFindPlayers(View view)
+    {
+        Intent serverIntent = new Intent(this, DeviceListActivity.class);
+        startActivityForResult(serverIntent, BluetoothController.REQUEST_CONNECT_DEVICE_SECURE);
+    }
+
     public void onEnableDiscoveryButton(View view)
     {
         // Ensure this device is discoverable by others
@@ -152,9 +161,6 @@ public class ConnectActivity extends ActionBarActivity implements BTCReceiver, B
         Intent serverIntent = new Intent(this, DeviceListActivity.class);
         startActivityForResult(serverIntent, BluetoothController.REQUEST_CONNECT_DEVICE_INSECURE);
     }
-
-
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)

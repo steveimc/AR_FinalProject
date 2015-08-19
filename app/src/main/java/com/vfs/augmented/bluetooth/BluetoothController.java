@@ -63,6 +63,7 @@ public class BluetoothController
         _connectionCallback = callback;
     }
 
+
     public void onActivityStart()
     {
         if (!mBluetoothAdapter.isEnabled())
@@ -118,7 +119,8 @@ public class BluetoothController
         }
     }
 
-    public void sendMessage(Packet packetToSend) {
+    public void sendMessage(Packet packetToSend)
+    {
         // Check that we're actually connected before trying anything
         if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED)
         {

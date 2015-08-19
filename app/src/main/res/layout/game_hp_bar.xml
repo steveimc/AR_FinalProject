@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal|left"
+        android:background="#a5f5fff5"
+        android:padding="10dp"
+        android:layout_above="@+id/linearLayout"
+        android:layout_alignParentStart="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="HP:" />
+
+        <ImageView
+            android:id="@+id/game_player_hp1"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/shape_circle"
+            android:tint="#ffeb3532"
+            android:layout_marginLeft="10dp"/>
+        <ImageView
+            android:id="@+id/game_player_hp2"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/shape_circle"
+            android:tint="#ffeb3532"
+            android:layout_marginLeft="10dp"/>
+        <ImageView
+            android:id="@+id/game_player_hp3"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/shape_circle"
+            android:tint="#ffeb3532"
+            android:layout_marginLeft="10dp"/>
+        <ImageView
+            android:id="@+id/game_player_hp4"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/shape_circle"
+            android:tint="#ffeb3532"
+            android:layout_marginLeft="10dp"/>
+        <ImageView
+            android:id="@+id/game_player_hp5"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/shape_circle"
+            android:tint="#ffeb3532"
+            android:layout_marginLeft="10dp"/>
+
+        <ImageView
+            android:id="@+id/game_player_hp6"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/shape_circle"
+            android:tint="#ffeb3532"
+            android:layout_marginLeft="10dp"/>
+        <ImageView
+            android:id="@+id/game_player_hp7"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/shape_circle"
+            android:tint="#ffeb3532"
+            android:layout_marginLeft="10dp"/>
+        <ImageView
+            android:id="@+id/game_player_hp8"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/shape_circle"
+            android:tint="#ffeb3532"
+            android:layout_marginLeft="10dp"/>
+        <ImageView
+            android:id="@+id/game_player_hp9"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/shape_circle"
+            android:tint="#ffeb3532"
+            android:layout_marginLeft="10dp"/>
+        <ImageView
+            android:id="@+id/game_player_hp10"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/shape_circle"
+            android:tint="#ffeb3532"
+            android:layout_marginLeft="10dp"/>
+    </LinearLayout>
+</LinearLayout>

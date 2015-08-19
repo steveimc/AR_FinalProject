@@ -9,6 +9,7 @@ public class Packet implements Serializable
 {
     public int      code = -1;
     public String   value = "";
+    public int[]    sequence = null;
 
     public Packet()
     {
@@ -20,4 +21,11 @@ public class Packet implements Serializable
         this.code   = code;
         this.value  = value;
     }
+/*
+    public Packet(int[] sequence)
+    {
+        this.code = PacketCodes.PLAYER_MOVE_SEQUENCE;
+        this.sequence = sequence;
+    }
+    */
 }

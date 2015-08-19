@@ -14,4 +14,5 @@ public class BluetoothApplication extends Application
     public Game _game;
 
     public boolean _enemyIsInGameActivity = false;
+    public String _username = "myUsername";
 }
