@@ -1,29 +1,46 @@
 package com.vfs.augmented.game;
 
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import com.vfs.augmented.R;
 import com.vfs.augmented.activities.GameActivity;
 import com.vfs.augmented.game.Abilities.Moves;
+
+import java.util.ArrayList;
+
 /**
  * Created by andreia on 17/08/15.
  */
 public class Game
 {
-    GameActivity _gameActivity;
+    GameActivity        _gameActivity;
+    private Player      _myPlayer;
+    private Player      _enemyPlayer;
+    private int         _currentTurn = -1;
+    ArrayList<Turn>     _turns;
 
-    private Player _myPlayer;
-    private Player _enemyPlayer;
-
-    int _currentTurn = 0;
-    int _movesPerTurn = 3;
+    public class Turn
+    {
+        public Turn(int count){this.count = count;}
+        int count = -1;
+        Moves playerMove;
+        Moves enemyMove;
+        Player winner;
+    }
 
     public Game(Player myPlayer, Player enemyPlayer)
     {
         _myPlayer       = myPlayer;
         _enemyPlayer    = enemyPlayer;
+    }
+
+    public void onGameActivity(GameActivity activity)
+    {
+        _gameActivity = activity;
+    }
+
+    // If both players are in this activity, game may start
+    public void startGame()
+    {
+        _turns = new ArrayList<Turn>();
+        nextTurn();
     }
 
     public Player getMyPlayer()
@@ -36,38 +53,126 @@ public class Game
         return _enemyPlayer;
     }
 
-    public void onGameActivity(GameActivity activity)
-    {
-        _gameActivity = activity;
-    }
-
-    public void updateGame(int turn, Moves[] player1Moves, Moves[] player2Moves)
-    {
-        calculateDamage(player1Moves[0], player2Moves[0]);
-        calculateDamage(player1Moves[1], player2Moves[1]);
-        calculateDamage(player1Moves[2], player2Moves[2]);
-    }
-
-    private void calculateDamage(Moves p1Move, Moves p2Move)
-    {
-        // Update players life & stuff
-        // Update UI
-        // Do Animations
-    }
-
-    public void nextTurn()
+    private void nextTurn()
     {
         _currentTurn++;
-        _gameActivity.updateTurn(_currentTurn);
+        Turn newTurn = new Turn(_currentTurn);
+        _turns.add(newTurn);
+
+        // Turns start at 0 but UI start at 1
+        _gameActivity.updateTurn(_currentTurn + 1);
     }
 
-    public void dealDamageToPlayer(boolean isOwner)
+    public void addPlayerMove(Moves pMove)
     {
-        if(isOwner)
+        _turns.get(_currentTurn).playerMove = pMove;
+    }
+
+    public void addEnemyMove(Moves eMove)
+    {
+        _turns.get(_currentTurn).enemyMove = eMove;
+    }
+
+    public boolean bothPlayersSubmittedMoveForCurrentTurn()
+    {
+        return (_turns.get(_currentTurn).playerMove != null && _turns.get(_currentTurn).enemyMove != null);
+    }
+
+    public void doTurn()
+    {
+        // Change in UI
+        // Call Animations
+        _turns.get(_currentTurn).winner = calculateTurnWinner(_turns.get(_currentTurn).playerMove, _turns.get(_currentTurn).enemyMove);
+    }
+
+    public void myPlayerWon()
+    {
+        // Show I WIN in UI
+        dealDamageToPlayer(_enemyPlayer); // Damage enemy
+    }
+
+    public void myPlayerLost()
+    {
+        // Show I LOSE in UI
+        dealDamageToPlayer(_myPlayer); // Damage my char
+    }
+
+    // Called when animations are done
+    public void onFinishTurn()
+    {
+        // Updates players hp
+        // If I win
+        if(_turns.get(_currentTurn).winner == null)
         {
-            _myPlayer.takeOneLife();
-            _gameActivity.updateHPView(true, _myPlayer.getCurrentLifes());
+            doTie();
         }
+        else if(_turns.get(_currentTurn).winner == _myPlayer)
+        {
+            myPlayerWon();
+        }
+        else
+        {
+            myPlayerLost();
+        }
+
+        nextTurn();
+    }
+
+    private Player calculateTurnWinner(Moves p1Move, Moves p2Move)
+    {
+        if(p1Move == p2Move)
+        {
+            // TIE, winner is null
+        }
+        else
+        {
+            switch (p1Move)
+            {
+                case ATTACK:
+                    if(p2Move == Moves.DEFEND)
+                    {
+                        return _enemyPlayer;
+                    }
+                    else if(p2Move == Moves.SPECIAL)
+                    {
+                        return _myPlayer;
+                    }
+                    break;
+                case DEFEND:
+                    if(p2Move == Moves.ATTACK)
+                    {
+                        return _myPlayer;
+                    }
+                    else if(p2Move == Moves.SPECIAL)
+                    {
+                        return _enemyPlayer;
+                    }
+                    break;
+                case SPECIAL:
+                    if(p2Move == Moves.ATTACK)
+                    {
+                        return _enemyPlayer;
+                    }
+                    else if(p2Move == Moves.DEFEND)
+                    {
+                        return _myPlayer;
+                    }
+                    break;
+            }
+        }
+
+        return null;
+    }
+
+    public void doTie()
+    {
+        //shows in ui
+    }
+
+    public void dealDamageToPlayer(Player player)
+    {
+        player.takeOneLife();
+        _gameActivity.updateHPView(true, player.getCurrentLifes());
     }
 
 }
