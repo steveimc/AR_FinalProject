@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.metaio.sdk.ARViewActivity;
@@ -36,11 +37,14 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
     {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.select_activity);
+        //setContentView(R.layout.game_activity);
 
         _btController = ((BluetoothApplication)this.getApplicationContext())._bluetoothController;
         _game = ((BluetoothApplication)this.getApplicationContext())._game;
         _btController.changeActivity(this, this);
+
+        _game.onGameActivity(this);
+        setupViews();
 
         // Tell other player we are in this activity
         _btController.sendMessage(new Packet(PacketCodes.PLAYER_IS_READY, ""));
@@ -55,6 +59,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
     @Override
     protected int getGUILayout()
     {
+        Log.e("getGUILayout", "called");
         return R.layout.game_activity;
     }
 
@@ -260,4 +265,62 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
         return super.onOptionsItemSelected(item);
     }
+
+
+///   UI    //////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+
+
+    View        _myPlayerHPView;
+    View        _enemyPlayerHPView;
+    TextView    _turnNumber;
+
+
+    void setupViews()
+    {
+        // Metaio creates a View on top of its camera with the activity xml.
+        // It stores our view mGUIView
+        TextView playerName =  (TextView) mGUIView.findViewById(R.id.game_player_username);
+        TextView enemyName  =  (TextView) mGUIView.findViewById(R.id.game_enemy_username);
+
+        String player   = _game.getMyPlayer().username;
+        String enemy    = _game.getEnemyPlayer().username;
+
+        playerName.setText(player);
+        enemyName.setText(enemy);
+        Log.e("playerName", playerName.getText().toString());
+
+        _myPlayerHPView     = (View) mGUIView.findViewById(R.id.game_playerhp);
+        _enemyPlayerHPView  = (View) mGUIView.findViewById(R.id.game_enemyhp);
+        _turnNumber = (TextView) mGUIView.findViewById(R.id.game_turn);
+    }
+
+    public void updateTurn(int turn)
+    {
+        _turnNumber.setText(Integer.toString(turn));
+    }
+
+    public void updateHPView(boolean isOwner, int currentHp)
+    {
+        if(isOwner)
+        {
+            _myPlayerHPView.findViewById(hpViews[currentHp]).setVisibility(View.GONE);
+        }
+        else
+        {
+            _enemyPlayerHPView.findViewById(hpViews[currentHp]).setVisibility(View.GONE);
+        }
+    }
+
+    int[] hpViews = new int[] {
+            R.id.game_player_hp1,
+            R.id.game_player_hp2,
+            R.id.game_player_hp3,
+            R.id.game_player_hp4,
+            R.id.game_player_hp5,
+            R.id.game_player_hp6,
+            R.id.game_player_hp7,
+            R.id.game_player_hp8,
+            R.id.game_player_hp9,
+            R.id.game_player_hp10};
 }

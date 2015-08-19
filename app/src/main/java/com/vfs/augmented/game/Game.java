@@ -17,13 +17,8 @@ public class Game
     private Player _myPlayer;
     private Player _enemyPlayer;
 
-    LinearLayout _myPlayerHPView;
-    LinearLayout _enemyPlayerHPView;
-
     int _currentTurn = 0;
     int _movesPerTurn = 3;
-
-    TextView turnNumber;
 
     public Game(Player myPlayer, Player enemyPlayer)
     {
@@ -44,9 +39,6 @@ public class Game
     public void onGameActivity(GameActivity activity)
     {
         _gameActivity = activity;
-        setupViews();
-        turnNumber = (TextView) _gameActivity.findViewById(R.id.game_turn);
-        updateTurn();
     }
 
     public void updateGame(int turn, Moves[] player1Moves, Moves[] player2Moves)
@@ -63,21 +55,10 @@ public class Game
         // Do Animations
     }
 
-    void setupViews()
-    {
-        TextView playerName =  (TextView) _gameActivity.findViewById(R.id.game_player_username);
-        TextView enemyName  =  (TextView) _gameActivity.findViewById(R.id.game_enemy_username);
-        playerName.setText(_myPlayer.username);
-        enemyName.setText(_enemyPlayer.username);
-
-        _myPlayerHPView = (LinearLayout) _gameActivity.findViewById(R.id.game_playerhp);
-        _enemyPlayerHPView = (LinearLayout) _gameActivity.findViewById(R.id.game_enemyhp);
-    }
-
     public void nextTurn()
     {
         _currentTurn++;
-        updateTurn();
+        _gameActivity.updateTurn(_currentTurn);
     }
 
     public void dealDamageToPlayer(boolean isOwner)
@@ -85,27 +66,8 @@ public class Game
         if(isOwner)
         {
             _myPlayer.takeOneLife();
-            updateHPView(true, _myPlayer.getCurrentLifes());
+            _gameActivity.updateHPView(true, _myPlayer.getCurrentLifes());
         }
     }
 
-    void updateTurn()
-    {
-        turnNumber.setText(Integer.toString(_currentTurn));
-    }
-
-    void updateHPView(boolean isOwner, int currentHp)
-    {
-        if(isOwner)
-        {
-            _myPlayerHPView.findViewById(hpViews[currentHp]).setVisibility(View.GONE);
-        }
-        else
-        {
-            _enemyPlayerHPView.findViewById(hpViews[currentHp]).setVisibility(View.GONE);
-        }
-    }
-
-    int[] hpViews = new int[]{R.id.game_player_hp1, R.id.game_player_hp2, R.id.game_player_hp3, R.id.game_player_hp4,
-    R.id.game_player_hp5, R.id.game_player_hp6, R.id.game_player_hp7, R.id.game_player_hp8, R.id.game_player_hp10};
 }
