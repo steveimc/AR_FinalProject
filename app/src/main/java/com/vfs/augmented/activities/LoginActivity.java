@@ -2,7 +2,6 @@ package com.vfs.augmented.activities;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -12,39 +11,14 @@ import com.vfs.augmented.BluetoothApplication;
 import com.vfs.augmented.R;
 
 
-public class SplashActivity extends Activity
+public class LoginActivity extends Activity
 {
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.splash_activity);
-
-
-
-/*
-        Thread timerThread = new Thread()
-        {
-            public void run()
-            {
-                try
-                {
-                    sleep(3000);
-                }
-                catch(InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
-                finally
-                {
-                    Intent intent = new Intent(SplashActivity.this,ConnectActivity.class);
-                    startActivity(intent);
-                }
-            }
-        };
-        timerThread.start();*/
+        setContentView(R.layout.login_activity);
     }
 
     public void onStartButton(View view)
@@ -59,7 +33,7 @@ public class SplashActivity extends Activity
 
     void goToConnectActivity()
     {
-        Intent intent = new Intent(SplashActivity.this,ConnectActivity.class);
+        Intent intent = new Intent(LoginActivity.this,ConnectActivity.class);
         startActivity(intent);
         this.finish();
     }

@@ -7,6 +7,7 @@ public class Player
 {
     private final int maxLifes = 10;
     private int currentLifes = 10;
+    public boolean _ready = false;
 
     public Monster monster;
     public int playerId;

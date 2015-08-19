@@ -26,5 +26,7 @@ public class PacketCodes
 
     public static final int PLAYER_MOVE_SEQUENCE    = 6;
 
+    public static final int PLAYER_IS_TRACKING  = 7;
+
 
 }

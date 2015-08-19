@@ -2,17 +2,18 @@ package com.vfs.augmented.activities;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.metaio.sdk.ARViewActivity;
 import com.metaio.sdk.MetaioDebug;
+import com.metaio.sdk.jni.ETRACKING_STATE;
 import com.metaio.sdk.jni.IGeometry;
 import com.metaio.sdk.jni.IMetaioSDKCallback;
+import com.metaio.sdk.jni.TrackingValues;
 import com.metaio.sdk.jni.TrackingValuesVector;
 import com.metaio.tools.io.AssetsManager;
 import com.vfs.augmented.BluetoothApplication;
@@ -30,6 +31,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 {
     BluetoothController _btController;
     Game                _game;
+    View                _gameUI;
     boolean             _gameCanStart = false;
 
     @Override
@@ -37,7 +39,6 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
     {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.game_activity);
 
         _btController = ((BluetoothApplication)this.getApplicationContext())._bluetoothController;
         _game = ((BluetoothApplication)this.getApplicationContext())._game;
@@ -52,7 +53,15 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         // If the other player is in this activity
         if(((BluetoothApplication)this.getApplicationContext())._enemyIsInGameActivity)
             _gameCanStart = true;
+
+        _gameUI = mGUIView.findViewById(R.id.game_ui);
+        _gameUI.setVisibility(View.INVISIBLE);
+
+
     }
+
+///   METAIO    //////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 
     private IMetaioSDKCallback metaioCallback;
 
@@ -108,8 +117,8 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
                     geometry.setTexture(texture);
                     geometry2.setTexture(texture);
 
-                    geometry.startAnimationRange(0,40,true);
-                    geometry2.startAnimationRange(0,40,true);
+                    geometry.startAnimationRange(0,50,true);
+                    geometry2.startAnimationRange(0,50,true);
 
                 }
                 else
@@ -127,20 +136,45 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
     }
 
+    @Override
+    public void onDrawFrame()
+    {
+        super.onDrawFrame();
+
+        if(_game.getMyPlayer()._ready && _game.getEnemyPlayer()._ready)
+        {
+            _gameUI.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            _gameUI.setVisibility(View.INVISIBLE);
+        }
+    }
+
     private class MetaioSDKCallbackHandler extends IMetaioSDKCallback
     {
         @Override
         public void onTrackingEvent(TrackingValuesVector trackingValues)
         {
-            /*
-            Log.i("xmetaio", "tracking event: " + trackingValues.size());
             for (int i=0; i<trackingValues.size(); i++)
             {
-                final TrackingValues v = trackingValues.get(i);
-                MetaioDebug.log("Tracking state for COS " + v.getCoordinateSystemID() + " is " + v.getState());
-                Log.i("xmetaio", "Tracking state for COS " + v.getCoordinateSystemID() + " is " + v.getState());
+                final TrackingValues value = trackingValues.get(i);
+
+                if(value.getState().equals(ETRACKING_STATE.ETS_FOUND) && !_game.getMyPlayer()._ready)
+                {
+                    _game.getMyPlayer()._ready = true;
+                    _btController.sendMessage(new Packet(PacketCodes.PLAYER_IS_TRACKING,PacketCodes.YES));
+                }
+                else
+                {
+                    _game.getMyPlayer()._ready = false;
+                    _btController.sendMessage(new Packet(PacketCodes.PLAYER_IS_TRACKING,PacketCodes.NO));
+                }
+
             }
-            */
+
+            setUI();
+
         }
 
         @Override
@@ -159,6 +193,17 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
     }
 
+    private void setUI()
+    {
+        if(_game.getMyPlayer()._ready && _game.getEnemyPlayer()._ready)
+            _gameUI.setVisibility(View.VISIBLE);
+        else
+            _gameUI.setVisibility(View.INVISIBLE);
+    }
+
+///   BLUETOOTH    //////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+
     @Override
     public void receivePacket(Packet packet)
     {
@@ -171,8 +216,19 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
             case PacketCodes.PLAYER_MOVE:
                 doEnemyAttack(packet.value);
                 break;
+            case PacketCodes.PLAYER_IS_TRACKING:
+                if(packet.value.equals(PacketCodes.YES))
+                    _game.getEnemyPlayer()._ready = true;
+                else
+                    _game.getEnemyPlayer()._ready = false;
+                break;
         }
+
+        setUI();
     }
+
+///   GAME    //////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 
     private void doMove(Moves move)
     {
@@ -238,34 +294,6 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
     {
         _game.dealDamageToPlayer(true);
     }
-
-//////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_game, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings)
-        {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
 
 ///   UI    //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
