@@ -102,8 +102,8 @@ public class SelectActivity extends Activity implements BTCReceiver
         {
             ((BluetoothApplication) this.getApplicationContext())._game = new Game(_myPlayer, _enemyPlayer);
             _game = ((BluetoothApplication)this.getApplicationContext())._game;
-            _game.getMyPlayer().username    = _playerUsername;
-            _game.getEnemyPlayer().username = _enemyUsername;
+            _game.getMyPlayer()._username    = _playerUsername;
+            _game.getEnemyPlayer()._username = _enemyUsername;
             goToGameActivity();
         }
     }

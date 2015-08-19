@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +23,7 @@ import com.vfs.augmented.bluetooth.packet.Packet;
 import com.vfs.augmented.bluetooth.packet.PacketCodes;
 import com.vfs.augmented.game.Game;
 import com.vfs.augmented.game.Abilities.Moves;
+import com.vfs.augmented.game.Monster;
 
 import java.io.File;
 
@@ -33,6 +33,8 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
     Game                _game;
     View                _gameUI;
     boolean             _gameCanStart = false;
+    public IGeometry    _myPlayerGeometry;
+    public IGeometry    _enemyPlayerGeometry;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -91,37 +93,38 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
             MetaioDebug.log("Tracking data loaded: " + result);
 
             // Getting a file path for a 3D geometry
-            File monster1 = AssetsManager.getAssetPathAsFile(getApplicationContext(), "models/Monster1.mfbx");
-            File monster2 = AssetsManager.getAssetPathAsFile(getApplicationContext(), "models/Monster1.mfbx");
-            File texture = AssetsManager.getAssetPathAsFile(getApplicationContext(), "textures/MonsterTexture.png");
+            File texture = Monster.getTextureFile(getApplicationContext(), _game.getMyPlayer()._monster.getId());
+            File texture2 = Monster.getTextureFile(getApplicationContext(), _game.getEnemyPlayer()._monster.getId());
 
             metaioCallback = getMetaioSDKCallbackHandler();
             metaioSDK.registerCallback(metaioCallback);
 
-            if (monster1 != null)
+            File monsterFile1 = Monster.getModelFile(getApplicationContext(), _game.getMyPlayer()._monster.getId());
+            File monsterFile2 = Monster.getModelFile(getApplicationContext(), _game.getEnemyPlayer()._monster.getId());
+
+            if (monsterFile1 != null && monsterFile2 != null)
             {
                 // Loading 3D geometry
-                IGeometry geometry = metaioSDK.createGeometry(monster1);
-                IGeometry geometry2 = metaioSDK.createGeometry(monster2);
+                _myPlayerGeometry = metaioSDK.createGeometry(monsterFile1);
+                _enemyPlayerGeometry = metaioSDK.createGeometry(monsterFile2);
 
-                if (geometry != null)
+                if (_myPlayerGeometry != null)
                 {
                     // Set geometry properties
-                    geometry.setScale(50f);
-                    geometry2.setScale(50f);
+                    _myPlayerGeometry.setScale(50f);
+                    _enemyPlayerGeometry.setScale(50f);
 
-                    geometry.setCoordinateSystemID(1);
-                    geometry2.setCoordinateSystemID(2);
+                    _myPlayerGeometry.setCoordinateSystemID(_game.getMyPlayer()._monster.getId().ordinal());
+                    _enemyPlayerGeometry.setCoordinateSystemID(_game.getEnemyPlayer()._monster.getId().ordinal());
 
-                    geometry.setTexture(texture);
-                    geometry2.setTexture(texture);
+                    _myPlayerGeometry.setTexture(texture);
+                    _enemyPlayerGeometry.setTexture(texture2);
 
-                    geometry.startAnimationRange(0,50,true);
-                    geometry2.startAnimationRange(0,50,true);
-
+                    _myPlayerGeometry.startAnimationRange(0,50,true);
+                    _enemyPlayerGeometry.startAnimationRange(0,50,true);
                 }
                 else
-                    MetaioDebug.log(Log.ERROR, "Error loading geometry: "+ monster1);
+                    MetaioDebug.log(Log.ERROR, "Error loading geometry: "+ monsterFile1);
             }
         }
         catch (Exception e)
@@ -165,15 +168,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         @Override
         public void onAnimationEnd(IGeometry geometry, String name)
         {
-            /*
-            Log.i("xmetaio", "tracking event: " + trackingValues.size());
-            for (int i=0; i<trackingValues.size(); i++)
-            {
-                final TrackingValues v = trackingValues.get(i);
-                MetaioDebug.log("Tracking state for COS " + v.getCoordinateSystemID() + " is " + v.getState());
-                Log.i("xmetaio", "Tracking state for COS " + v.getCoordinateSystemID() + " is " + v.getState());
-            }
-            */
+
         }
 
     }
@@ -189,7 +184,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         {
             case PacketCodes.PLAYER_IS_READY:
                 _gameCanStart = true;
-                Toast.makeText(this, "other player in. My Monster: " + _game.getMyPlayer().monsterType, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "other player in. My Monster: " + _game.getMyPlayer()._monster.getId(), Toast.LENGTH_SHORT).show();
                 break;
             case PacketCodes.PLAYER_MOVE:
                 doEnemyAttack(packet.value);
@@ -206,31 +201,32 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         }
     }
 
+    public void animate(IGeometry monsterGeometry, Monster.Range range)
+    {
+        monsterGeometry.startAnimationRange(range.start, range.end,range.loop);
+    }
+
+
 ///   GAME    //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
-    private void doMove(Moves move)
+    // Comes from a local choice
+    private void doPlayerAttack(Moves move)
     {
         switch (move)
         {
             case ATTACK:
                 _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_ATTACK));
-                doPlayerAttack(Moves.ATTACK);
                 break;
             case DEFEND:
                 _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_DEFEND));
-                doPlayerAttack(Moves.DEFEND);
                 break;
             case SPECIAL:
                 _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_SPECIAL));
-                doPlayerAttack(Moves.SPECIAL);
                 break;
         }
-    }
 
-    private void doPlayerAttack(Moves move)
-    {
-        Toast.makeText(this, "Me: " + move, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Me: " + move, Toast.LENGTH_SHORT).show();
         _game.addPlayerMove(move);
 
         // If both players are done, do turn
@@ -245,6 +241,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         }
     }
 
+    // Comes from a packet
     private void doEnemyAttack(String moveCode)
     {
         Moves enemyMove = null;
@@ -260,7 +257,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
                 enemyMove = Moves.SPECIAL;
                 break;
         }
-        Toast.makeText(this, "Enemy: " + enemyMove, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Enemy: " + enemyMove, Toast.LENGTH_SHORT).show();
         _game.addEnemyMove(enemyMove);
 
         if(_game.bothPlayersSubmittedMoveForCurrentTurn())
@@ -274,23 +271,19 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
     public void onAttackButton(View view)
     {
-        doMove(Moves.ATTACK);
+        doPlayerAttack(Moves.ATTACK);
     }
 
     public void onDefenseButton(View view)
     {
-        doMove(Moves.DEFEND);
+        doPlayerAttack(Moves.DEFEND);
     }
 
     public void onSpecialButton(View view)
     {
-        doMove(Moves.SPECIAL);
+        doPlayerAttack(Moves.SPECIAL);
     }
 
-    public void dealDamageToMyPlayer (View view)
-    {
-        _game.dealDamageToPlayer(_game.getMyPlayer());
-    }
 
 ///   UI    //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
@@ -308,8 +301,8 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         TextView playerName =  (TextView) mGUIView.findViewById(R.id.game_player_username);
         TextView enemyName  =  (TextView) mGUIView.findViewById(R.id.game_enemy_username);
 
-        String player   = _game.getMyPlayer().username;
-        String enemy    = _game.getEnemyPlayer().username;
+        String player   = _game.getMyPlayer()._username;
+        String enemy    = _game.getEnemyPlayer()._username;
 
         playerName.setText(player);
         enemyName.setText(enemy);

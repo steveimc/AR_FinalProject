@@ -106,8 +106,7 @@
         android:textSize="28dp"
         android:layout_above="@+id/game_player_username"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="25dp"
-        android:onClick="dealDamageToMyPlayer"/>
+        android:layout_marginEnd="25dp"/>
 
 
 </RelativeLayout>

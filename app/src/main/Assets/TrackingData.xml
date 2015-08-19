@@ -115,7 +115,7 @@
 							These parameters are not required and are intended 
 							for expert use only. -->
                     <!-- <ReferenceImage>metaioman_target.png</ReferenceImage> -->
-                    <ReferenceImage>mons-02.png</ReferenceImage>
+                    <ReferenceImage>mons-01.png</ReferenceImage>
 
 					<!--	Another similarity threshold can be specified here. 
 							It will override the default similarity threshold 
@@ -133,7 +133,7 @@
 			<SensorCOS>
 				<SensorCosID>Patch2</SensorCosID>
 				<Parameters>
-					<ReferenceImage>mons-01.png</ReferenceImage>
+					<ReferenceImage>mons-02.png</ReferenceImage>
 					<SimilarityThreshold>0.7</SimilarityThreshold>
 				</Parameters>
 			</SensorCOS>

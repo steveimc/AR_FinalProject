@@ -1,6 +1,5 @@
 package com.vfs.augmented.game;
 
-import android.content.Intent;
 import android.os.Handler;
 import android.widget.Toast;
 
@@ -89,7 +88,19 @@ public class Game
         // Change in UI
         // Call Animations
         _turns.get(_currentTurn).winner = calculateTurnWinner(_turns.get(_currentTurn).playerMove, _turns.get(_currentTurn).enemyMove);
-        onFinishTurn();
+        _gameActivity.animate(_gameActivity._myPlayerGeometry,Monster.getAnimation(_turns.get(_currentTurn).playerMove));
+        _gameActivity.animate(_gameActivity._enemyPlayerGeometry,Monster.getAnimation(_turns.get(_currentTurn).enemyMove));
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run()
+            {
+                _gameActivity.animate(_gameActivity._myPlayerGeometry,Monster.getAnimation(Moves.IDLE));
+                _gameActivity.animate(_gameActivity._enemyPlayerGeometry,Monster.getAnimation(Moves.IDLE));
+                onFinishTurn();
+            }
+        },2000);
+
     }
 
     public void myPlayerWon()
@@ -179,7 +190,7 @@ public class Game
 
     public void dealDamageToPlayer(Player player)
     {
-        player.takeOneLife();
+        player.takeDamage();
         boolean isOwner = false;
 
         if(player == _myPlayer)

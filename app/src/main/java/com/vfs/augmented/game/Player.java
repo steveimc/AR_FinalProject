@@ -5,28 +5,27 @@ package com.vfs.augmented.game;
  */
 public class Player
 {
-    private final int maxLifes = 10;
-    private int currentLifes = 10;
+    private final int MAX_LIFE = 10;
+
     public boolean _ready = false;
 
-    public Monster monster;
-    public int playerId;
+    public Monster _monster;
 
-    public String username;
-    public Monster.MonsterType monsterType;
+    public String _username;
 
-    public void takeOneLife()
+    public void takeDamage()
     {
-        currentLifes--;
+        _monster.setDamage();
     }
 
     public int getCurrentLifes()
     {
-        return currentLifes;
+        return _monster.getLife();
     }
 
     public Player(Monster.MonsterType pickedMonster)
     {
-        monsterType = pickedMonster;
+        _monster = new Monster(pickedMonster,MAX_LIFE);
+
     }
 }

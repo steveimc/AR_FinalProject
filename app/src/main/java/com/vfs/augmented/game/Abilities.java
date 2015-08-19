@@ -12,7 +12,8 @@ public class Abilities
     {
         ATTACK,
         DEFEND,
-        SPECIAL
+        SPECIAL,
+        IDLE
     }
 
     public static int getDamage(Moves move)
