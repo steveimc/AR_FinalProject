@@ -1,5 +1,9 @@
 package com.vfs.augmented.game;
 
+import android.content.Intent;
+import android.os.Handler;
+import android.widget.Toast;
+
 import com.vfs.augmented.activities.GameActivity;
 import com.vfs.augmented.game.Abilities.Moves;
 
@@ -15,6 +19,7 @@ public class Game
     private Player      _enemyPlayer;
     private int         _currentTurn = -1;
     ArrayList<Turn>     _turns;
+    private boolean     _hasStarted = false;
 
     public class Turn
     {
@@ -39,6 +44,7 @@ public class Game
     // If both players are in this activity, game may start
     public void startGame()
     {
+        _hasStarted = true;
         _turns = new ArrayList<Turn>();
         nextTurn();
     }
@@ -83,6 +89,7 @@ public class Game
         // Change in UI
         // Call Animations
         _turns.get(_currentTurn).winner = calculateTurnWinner(_turns.get(_currentTurn).playerMove, _turns.get(_currentTurn).enemyMove);
+        onFinishTurn();
     }
 
     public void myPlayerWon()
@@ -95,6 +102,7 @@ public class Game
     {
         // Show I LOSE in UI
         dealDamageToPlayer(_myPlayer); // Damage my char
+
     }
 
     // Called when animations are done
@@ -167,6 +175,7 @@ public class Game
     public void doTie()
     {
         //shows in ui
+        Toast.makeText(_gameActivity, "TIE", Toast.LENGTH_SHORT).show();
     }
 
     public void dealDamageToPlayer(Player player)

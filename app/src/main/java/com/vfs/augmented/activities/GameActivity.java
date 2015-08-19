@@ -55,7 +55,8 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
             _gameCanStart = true;
 
         _gameUI = mGUIView;
-        _gameUI.setAlpha(0);
+        _game.startGame();
+        //_gameUI.setAlpha(0);
     }
 
 ///   METAIO    //////////////////////////////////////////////////////////////////////////////////
@@ -214,40 +215,58 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         {
             case ATTACK:
                 _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_ATTACK));
-                doPlayerAttack("attack");
+                doPlayerAttack(Moves.ATTACK);
                 break;
             case DEFEND:
                 _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_DEFEND));
-                doPlayerAttack("defend");
+                doPlayerAttack(Moves.DEFEND);
                 break;
             case SPECIAL:
                 _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_SPECIAL));
-                doPlayerAttack("special");
+                doPlayerAttack(Moves.SPECIAL);
                 break;
         }
     }
 
-    private void doPlayerAttack(String move)
+    private void doPlayerAttack(Moves move)
     {
         Toast.makeText(this, "Me: " + move, Toast.LENGTH_SHORT).show();
+        _game.addPlayerMove(move);
+
+        // If both players are done, do turn
+        if(_game.bothPlayersSubmittedMoveForCurrentTurn())
+        {
+            _game.doTurn();
+        }
+        else
+        {
+            //  Otherwise means this player is waiting for enemys input
+            //  Hide Buttons & Show waiting in ui
+        }
     }
 
     private void doEnemyAttack(String moveCode)
     {
-        String move = "";
+        Moves enemyMove = null;
         switch (moveCode)
         {
             case PacketCodes.MOVE_ATTACK:
-                move = "attack";
+                enemyMove = Moves.ATTACK;
                 break;
             case PacketCodes.MOVE_DEFEND:
-                move = "defend";
+                enemyMove = Moves.DEFEND;
                 break;
             case PacketCodes.MOVE_SPECIAL:
-                move = "special";
+                enemyMove = Moves.SPECIAL;
                 break;
         }
-        Toast.makeText(this, "Enemy: " + move, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Enemy: " + enemyMove, Toast.LENGTH_SHORT).show();
+        _game.addEnemyMove(enemyMove);
+
+        if(_game.bothPlayersSubmittedMoveForCurrentTurn())
+        {
+            _game.doTurn();
+        }
     }
 
 ///   BUTTONS    //////////////////////////////////////////////////////////////////////////////////
@@ -303,6 +322,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
     private void setUI()
     {
+        /*
         if(_gameUI == null)
         {
             Log.e("setUI", "_gameUI is null");
@@ -320,7 +340,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
             Log.e("setUI", "not ready. Set UI OFF");
             //_gameUI.setVisibility(View.INVISIBLE);
             _gameUI.setAlpha(0);
-        }
+        }*/
     }
 
 
@@ -341,15 +361,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         }
     }
 
-    int[] hpViews = new int[] {
-            R.id.game_player_hp1,
-            R.id.game_player_hp2,
-            R.id.game_player_hp3,
-            R.id.game_player_hp4,
-            R.id.game_player_hp5,
-            R.id.game_player_hp6,
-            R.id.game_player_hp7,
-            R.id.game_player_hp8,
-            R.id.game_player_hp9,
-            R.id.game_player_hp10};
+    // Players share the same resource of hp bars, we use this to find the one we want to hide
+    int[] hpViews = new int[] { R.id.game_player_hp1, R.id.game_player_hp2, R.id.game_player_hp3, R.id.game_player_hp4, R.id.game_player_hp5,
+                                R.id.game_player_hp6, R.id.game_player_hp7, R.id.game_player_hp8, R.id.game_player_hp9, R.id.game_player_hp10};
 }
