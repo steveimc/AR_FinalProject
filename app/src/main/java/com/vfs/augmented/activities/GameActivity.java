@@ -78,31 +78,37 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
             MetaioDebug.log("Tracking data loaded: " + result);
 
             // Getting a file path for a 3D geometry
-            File metaioManModel = AssetsManager.getAssetPathAsFile(getApplicationContext(), "models/metaioman.md2");
-            File cube = AssetsManager.getAssetPathAsFile(getApplicationContext(), "models/cube.obj");
+            File monster1 = AssetsManager.getAssetPathAsFile(getApplicationContext(), "models/Monster1.mfbx");
+            File monster2 = AssetsManager.getAssetPathAsFile(getApplicationContext(), "models/Monster1.mfbx");
+            File texture = AssetsManager.getAssetPathAsFile(getApplicationContext(), "textures/MonsterTexture.png");
 
             metaioCallback = getMetaioSDKCallbackHandler();
             metaioSDK.registerCallback(metaioCallback);
 
-            if (metaioManModel != null)
+            if (monster1 != null)
             {
                 // Loading 3D geometry
-                IGeometry geometry = metaioSDK.createGeometry(metaioManModel);
-                IGeometry geometry2 = metaioSDK.createGeometry(cube);
+                IGeometry geometry = metaioSDK.createGeometry(monster1);
+                IGeometry geometry2 = metaioSDK.createGeometry(monster2);
 
                 if (geometry != null)
                 {
                     // Set geometry properties
-                    geometry.setScale(4f);
-                    geometry2.setScale(100f);
+                    geometry.setScale(50f);
+                    geometry2.setScale(50f);
 
                     geometry.setCoordinateSystemID(1);
                     geometry2.setCoordinateSystemID(2);
 
+                    geometry.setTexture(texture);
+                    geometry2.setTexture(texture);
+
+                    geometry.startAnimationRange(0,40,true);
+                    geometry2.startAnimationRange(0,40,true);
 
                 }
                 else
-                    MetaioDebug.log(Log.ERROR, "Error loading geometry: "+metaioManModel);
+                    MetaioDebug.log(Log.ERROR, "Error loading geometry: "+ monster1);
             }
         }
         catch (Exception e)
@@ -131,6 +137,21 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
             }
             */
         }
+
+        @Override
+        public void onAnimationEnd(IGeometry geometry, String name)
+        {
+            /*
+            Log.i("xmetaio", "tracking event: " + trackingValues.size());
+            for (int i=0; i<trackingValues.size(); i++)
+            {
+                final TrackingValues v = trackingValues.get(i);
+                MetaioDebug.log("Tracking state for COS " + v.getCoordinateSystemID() + " is " + v.getState());
+                Log.i("xmetaio", "Tracking state for COS " + v.getCoordinateSystemID() + " is " + v.getState());
+            }
+            */
+        }
+
     }
 
     @Override
