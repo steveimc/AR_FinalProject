@@ -54,10 +54,8 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         if(((BluetoothApplication)this.getApplicationContext())._enemyIsInGameActivity)
             _gameCanStart = true;
 
-        _gameUI = mGUIView.findViewById(R.id.game_ui);
-        _gameUI.setVisibility(View.INVISIBLE);
-
-
+        _gameUI = mGUIView;
+        _gameUI.setAlpha(0);
     }
 
 ///   METAIO    //////////////////////////////////////////////////////////////////////////////////
@@ -136,21 +134,6 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
     }
 
-    @Override
-    public void onDrawFrame()
-    {
-        super.onDrawFrame();
-
-        if(_game.getMyPlayer()._ready && _game.getEnemyPlayer()._ready)
-        {
-            _gameUI.setVisibility(View.VISIBLE);
-        }
-        else
-        {
-            _gameUI.setVisibility(View.INVISIBLE);
-        }
-    }
-
     private class MetaioSDKCallbackHandler extends IMetaioSDKCallback
     {
         @Override
@@ -163,14 +146,15 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
                 if(value.getState().equals(ETRACKING_STATE.ETS_FOUND) && !_game.getMyPlayer()._ready)
                 {
                     _game.getMyPlayer()._ready = true;
-                    _btController.sendMessage(new Packet(PacketCodes.PLAYER_IS_TRACKING,PacketCodes.YES));
+                    _btController.sendMessage(new Packet(PacketCodes.PLAYER_IS_TRACKING, PacketCodes.YES));
+                    Log.e("onTacking", value.getState().toString()+ "_Enemy ready = " + _game.getEnemyPlayer()._ready);
                 }
-                else
+                else if(!value.getState().equals(ETRACKING_STATE.ETS_FOUND) && _game.getMyPlayer()._ready)
                 {
                     _game.getMyPlayer()._ready = false;
                     _btController.sendMessage(new Packet(PacketCodes.PLAYER_IS_TRACKING,PacketCodes.NO));
+                    Log.e("onTacking", value.getState().toString() + "_Enemy ready = " + _game.getEnemyPlayer()._ready);
                 }
-
             }
 
             setUI();
@@ -193,13 +177,6 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
     }
 
-    private void setUI()
-    {
-        if(_game.getMyPlayer()._ready && _game.getEnemyPlayer()._ready)
-            _gameUI.setVisibility(View.VISIBLE);
-        else
-            _gameUI.setVisibility(View.INVISIBLE);
-    }
 
 ///   BLUETOOTH    //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
@@ -221,10 +198,11 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
                     _game.getEnemyPlayer()._ready = true;
                 else
                     _game.getEnemyPlayer()._ready = false;
+
+                Log.e("playerIsTrackinPAcket", "enemy Ready:" + _game.getEnemyPlayer()._ready);
+                setUI();
                 break;
         }
-
-        setUI();
     }
 
 ///   GAME    //////////////////////////////////////////////////////////////////////////////////
@@ -322,6 +300,29 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         _enemyPlayerHPView  = (View) mGUIView.findViewById(R.id.game_enemyhp);
         _turnNumber = (TextView) mGUIView.findViewById(R.id.game_turn);
     }
+
+    private void setUI()
+    {
+        if(_gameUI == null)
+        {
+            Log.e("setUI", "_gameUI is null");
+            return;
+        }
+
+        if(_game.getMyPlayer()._ready && _game.getEnemyPlayer()._ready)
+        {
+            Log.e("setUI", "both ready. Set UI ON");
+            //_gameUI.setVisibility(View.VISIBLE);
+            _gameUI.setAlpha(255);
+        }
+        else
+        {
+            Log.e("setUI", "not ready. Set UI OFF");
+            //_gameUI.setVisibility(View.INVISIBLE);
+            _gameUI.setAlpha(0);
+        }
+    }
+
 
     public void updateTurn(int turn)
     {
