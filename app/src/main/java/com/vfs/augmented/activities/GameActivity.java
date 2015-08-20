@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.metaio.sdk.ARViewActivity;
 import com.metaio.sdk.MetaioDebug;
@@ -26,7 +25,7 @@ import com.vfs.augmented.bluetooth.BluetoothController;
 import com.vfs.augmented.bluetooth.packet.Packet;
 import com.vfs.augmented.bluetooth.packet.PacketCodes;
 import com.vfs.augmented.game.Game;
-import com.vfs.augmented.game.Abilities.Moves;
+import com.vfs.augmented.game.Monster.Moves;
 import com.vfs.augmented.game.Monster;
 
 import java.io.File;

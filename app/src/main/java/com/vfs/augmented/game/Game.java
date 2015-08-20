@@ -4,7 +4,7 @@ import android.os.Handler;
 import android.widget.Toast;
 
 import com.vfs.augmented.activities.GameActivity;
-import com.vfs.augmented.game.Abilities.Moves;
+import com.vfs.augmented.game.Monster.Moves;
 
 import java.util.ArrayList;
 
@@ -28,6 +28,8 @@ public class Game
         Moves enemyMove;
         Player winner;
     }
+
+
 
     public Game(Player myPlayer, Player enemyPlayer)
     {

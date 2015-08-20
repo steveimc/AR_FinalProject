@@ -30,6 +30,14 @@ public class Monster
         MONSTER_TWO
     }
 
+    public static enum Moves
+    {
+        ATTACK,
+        DEFEND,
+        SPECIAL,
+        IDLE
+    }
+
     public Monster(MonsterType id, int life)
     {
         setId(id);
@@ -84,7 +92,7 @@ public class Monster
         return textureFile;
     }
 
-    public static Range getAnimation(Abilities.Moves move)
+    public static Range getAnimation(Moves move)
     {
         Range animationRange = new Range();
 
