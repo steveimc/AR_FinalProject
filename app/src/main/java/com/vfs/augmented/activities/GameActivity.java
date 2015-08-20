@@ -280,16 +280,28 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
     public void onAttackButton(View view)
     {
         doPlayerAttack(Moves.ATTACK);
+        popSound();
     }
 
     public void onDefenseButton(View view)
     {
         doPlayerAttack(Moves.DEFEND);
+        popSound();
     }
 
     public void onSpecialButton(View view)
     {
         doPlayerAttack(Moves.SPECIAL);
+        popSound();
+    }
+
+    public void popSound()
+    {
+        MediaPlayer mediaPlayer = MediaPlayer.create(GameActivity.this,R.raw.blob_select);
+        if(!mediaPlayer.isPlaying())
+        {
+            mediaPlayer.start();
+        }
     }
 
 
