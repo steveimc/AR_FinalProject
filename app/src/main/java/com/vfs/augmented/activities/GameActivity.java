@@ -92,6 +92,8 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
         tryStartGame();
         mGUIView.setAlpha(0);
+        Toast.makeText(GameActivity.this, "Track the cards to start playing.", Toast.LENGTH_LONG).show();
+        Toast.makeText(GameActivity.this, "The UI only shows when tracking.", Toast.LENGTH_LONG).show();
     }
 
 ///   METAIO    //////////////////////////////////////////////////////////////////
@@ -399,19 +401,19 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         if(_game.getMyPlayer()._ready && _game.getEnemyPlayer()._ready)
         {
             if(!_mediaPlayer.isPlaying())
+            {
                 _mediaPlayer.start();
+            }
 
             _gameUI.setAlpha(255);
         }
         else
         {
-            Toast.makeText(this, "Make sure you are tracking correctly in order to play.", Toast.LENGTH_LONG).show();
             if(_mediaPlayer.isPlaying())
             {
                 _mediaPlayer.pause();
                 _mediaPlayer.seekTo(0);
             }
-
             _gameUI.setAlpha(0);
         }
     }

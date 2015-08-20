@@ -148,13 +148,13 @@ public class Game
 
     public void myPlayerWon()
     {
-        Toast.makeText(_gameActivity, "You Won the Turn", Toast.LENGTH_SHORT).show();
+        Toast.makeText(_gameActivity, "SUPER EFFECTIVE!", Toast.LENGTH_SHORT).show();
         dealDamageToPlayer(_enemyPlayer); // Damage enemy
     }
 
     public void myPlayerLost()
     {
-        Toast.makeText(_gameActivity, "You Lost the Turn", Toast.LENGTH_SHORT).show();
+        Toast.makeText(_gameActivity, "YOU FAILED!", Toast.LENGTH_SHORT).show();
         dealDamageToPlayer(_myPlayer); // Damage my char
     }
 
