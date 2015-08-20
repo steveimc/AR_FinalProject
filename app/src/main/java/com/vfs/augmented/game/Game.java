@@ -7,11 +7,22 @@ import com.vfs.augmented.activities.GameActivity;
 import com.vfs.augmented.game.Monster.Moves;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by andreia on 17/08/15.
  * This class handles all the game information
- * We create one game clone per device in multiplayer mode
+ * We create one game clone per device on multiplayer mode
+ *
+ * GAME RULES:
+ * Mons is a Rock-Paper-Scissors clone.
+ * - Each turn, both players choose a move.
+ * - When defeated, the player loses 1 Life.
+ * - If there's a tie, nothing happens.
+ *
+ *  ATTACK  >   MAGIC
+ *  MAGIC   >   DEFEND
+ *  DEFEND  >   ATTACK
  */
 public class Game
 {
@@ -42,7 +53,7 @@ public class Game
         _gameActivity = activity;
     }
 
-    // If both players are in this activity, game may start
+    // If both players are in the game activity, this will be called
     public void startGame()
     {
         _turns = new ArrayList<Turn>();
@@ -57,16 +68,6 @@ public class Game
     public Player getEnemyPlayer()
     {
         return _enemyPlayer;
-    }
-
-    private void nextTurn()
-    {
-        _currentTurn++;
-        Turn newTurn = new Turn(_currentTurn);
-        _turns.add(newTurn);
-
-        // Turns start at 0 but UI start at 1
-        _gameActivity.updateTurn(_currentTurn + 1);
     }
 
     public void addPlayerMove(Moves pMove)
@@ -86,11 +87,10 @@ public class Game
 
     public void doTurn()
     {
-        // Change in UI
-        // Call Animations
         Turn currentTurn = _turns.get(_currentTurn);
-
         currentTurn.winner = calculateTurnWinner(currentTurn.playerMove, currentTurn.enemyMove);
+
+        // Call Animations in the monsters
         _gameActivity.animate(_gameActivity._myPlayerGeometry,Monster.getAnimation(currentTurn.playerMove));
         _gameActivity.animate(_gameActivity._enemyPlayerGeometry,Monster.getAnimation(currentTurn.enemyMove));
 
@@ -135,21 +135,29 @@ public class Game
         }
     }
 
+    // Called when all turn processing and feedback is done
+    private void nextTurn()
+    {
+        _currentTurn++;
+        Turn newTurn = new Turn(_currentTurn);
+        _turns.add(newTurn);
+
+        // Turns start at 0 but UI start at 1
+        _gameActivity.updateTurn(_currentTurn + 1);
+    }
+
     public void myPlayerWon()
     {
-        // Show I WIN in UI
         dealDamageToPlayer(_enemyPlayer); // Damage enemy
     }
 
     public void myPlayerLost()
     {
-        // Show I LOSE in UI
         dealDamageToPlayer(_myPlayer); // Damage my char
     }
 
     public void doTie()
     {
-        //shows in ui
         Toast.makeText(_gameActivity, "TIE", Toast.LENGTH_SHORT).show();
     }
 
@@ -219,6 +227,7 @@ public class Game
 
     public void dealDamageToPlayer(Player player)
     {
+        // player always loses one life only
         player.takeDamage();
         boolean isOwner = false;
 
@@ -226,6 +235,25 @@ public class Game
             isOwner = true;
 
         _gameActivity.updateHPView(isOwner, player.getCurrentLifes());
+    }
+
+    // In case of single player, a random attack replaces the enemies attack
+    public void doBotAttack()
+    {
+        Random rand = new Random();
+        int  random = rand.nextInt(3) + 1;
+        switch (random)
+        {
+            case 1:
+                addEnemyMove(Moves.ATTACK);
+                break;
+            case 2:
+                addEnemyMove(Moves.DEFEND);
+                break;
+            case 3:
+                addEnemyMove(Moves.MAGIC);
+                break;
+        }
     }
 
 }

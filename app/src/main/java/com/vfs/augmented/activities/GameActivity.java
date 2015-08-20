@@ -29,17 +29,29 @@ import com.vfs.augmented.game.Monster.Moves;
 import com.vfs.augmented.game.Monster;
 
 import java.io.File;
-import java.util.Random;
 
+/*
+* This class holds the 3 main features of th app
+*
+* Bluetooth Connection: send inputs from the game between players
+* Augmented Reality: show the game characters and animations in the world, fed by the bluetooth inputs
+* Game: A simple Rock - Paper - Scissors game to showcase the other features
+*
+* */
 public class GameActivity extends ARViewActivity implements BTCReceiver
 {
     private BluetoothController _btController;
     private Game                _game;
-    private View                _gameUI;
+
     private boolean             _gameCanStart = false;
-    private MediaPlayer         _mediaPlayer;
     private boolean             _isSinglePlayer = false;
+
+    private MediaPlayer         _mediaPlayer;
+    private View                _gameUI;
     private View                _attackBar;
+    private View                _myPlayerHPView;
+    private View                _enemyPlayerHPView;
+    private TextView            _turnNumber;
 
     public IGeometry            _myPlayerGeometry;
     public IGeometry            _enemyPlayerGeometry;
@@ -63,7 +75,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
             _btController.changeActivity(this, this);
             // Tell other player we are in this activity
             _btController.sendPacket(new Packet(PacketCodes.PLAYER_IS_READY, ""));
-            // If the other player is in this activity
+            // If the other player is already in this activity
             if(((BluetoothApplication)this.getApplicationContext())._enemyIsInGameActivity)
                 _gameCanStart = true;
         }
@@ -76,11 +88,11 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         _mediaPlayer = MediaPlayer.create(GameActivity.this,R.raw.pokemon_remastered);
         _mediaPlayer.setLooping(true);
 
-        _game.startGame();
-        //_gameUI.setAlpha(0);
+        tryStartGame();
+        _gameUI.setAlpha(0);
     }
 
-///   METAIO    //////////////////////////////////////////////////////////////////////////////////
+///   METAIO    //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
     private IMetaioSDKCallback metaioCallback;
@@ -188,7 +200,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
     }
 
 
-///   BLUETOOTH    //////////////////////////////////////////////////////////////////////////////////
+///   BLUETOOTH    ////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
     @Override
@@ -197,12 +209,13 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         switch (packet.code)
         {
             case PacketCodes.PLAYER_IS_READY:
-                _gameCanStart = true;
+                _gameCanStart = true; // If the other player is already in this activity the game can start
+                tryStartGame();
                 break;
             case PacketCodes.PLAYER_MOVE:
-                doEnemyAttack(packet.value);
+                doEnemyAttack(packet.value); // A player sent an attack for this turn
                 break;
-            case PacketCodes.PLAYER_IS_TRACKING:
+            case PacketCodes.PLAYER_IS_TRACKING: // Enemy device is tracking AR
                 if(packet.value.equals(PacketCodes.YES))
                     _game.getEnemyPlayer()._ready = true;
                 else
@@ -213,8 +226,16 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         }
     }
 
-///   GAME    //////////////////////////////////////////////////////////////////////////////////
+///   GAME    /////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
+
+    private void tryStartGame()
+    {
+        // Game will only start if both players are in this activity
+        // usually its almost instant but could be delayed due to connection
+        if(_gameCanStart)
+            _game.startGame();
+    }
 
     // Animate the geometry
     public void animate(IGeometry monsterGeometry, Monster.Range range)
@@ -229,11 +250,13 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
         if(_isSinglePlayer)
         {
-            doBotAttack();
+            // In this mode we simple add a random enemy attack and finish turn
+            _game.doBotAttack();
             _game.doTurn();
         }
         else
         {
+            // If multiplayer we send our attack to the other player
             switch (move)
             {
                 case ATTACK:
@@ -249,36 +272,14 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
             if(_game.bothPlayersSubmittedMoveForCurrentTurn())
             {
-                // If both players are done, do turn
+                // If game already received input from both players
                 _game.doTurn();
             }
-            else
-            {
-                //  Otherwise means this player is waiting for enemys input
-                //  Hide Buttons & Show waiting in ui
-            }
         }
     }
 
-    private void doBotAttack()
-    {
-        Random rand = new Random();
-        int  random = rand.nextInt(3) + 1;
-        switch (random)
-        {
-            case 1:
-                _game.addEnemyMove(Moves.ATTACK);
-                break;
-            case 2:
-                _game.addEnemyMove(Moves.DEFEND);
-                break;
-            case 3:
-                _game.addEnemyMove(Moves.MAGIC);
-                break;
-        }
-    }
-
-    // Comes from a packet
+    // Multiplayer Mode:
+    // Move comes from a packet over bluetooth
     private void doEnemyAttack(String moveCode)
     {
         Moves enemyMove = null;
@@ -296,14 +297,18 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
                 break;
         }
 
+        // Add the enemies move to this turn
         _game.addEnemyMove(enemyMove);
 
+        // Since we can receive enemies input before this players chooses
+        // we need to check for both inputs received
         if(_game.bothPlayersSubmittedMoveForCurrentTurn())
         {
             _game.doTurn();
         }
     }
 
+    // If the game is over change activity and send the outcome Win/Lose
     public void gameIsOver(boolean playerWon)
     {
         if(!_isSinglePlayer)
@@ -349,47 +354,40 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
     }
 
 
-///   UI    //////////////////////////////////////////////////////////////////////////////////
+///   UI    ///////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
-
-    View        _myPlayerHPView;
-    View        _enemyPlayerHPView;
-    TextView    _turnNumber;
 
     void setupViews()
     {
         // Metaio creates a View on top of its camera with the activity xml.
-        // It stores our view mGUIView
+        // It stores our view as mGUIView
         TextView playerName =  (TextView) mGUIView.findViewById(R.id.game_player_username);
         TextView enemyName  =  (TextView) mGUIView.findViewById(R.id.game_enemy_username);
 
-        String player   = _game.getMyPlayer()._username;
-        String enemy    = _game.getEnemyPlayer()._username;
+        String player       = _game.getMyPlayer()._username;
+        String enemy        = _game.getEnemyPlayer()._username;
 
         playerName.setText(player);
         enemyName.setText(enemy);
-        Log.e("playerName", playerName.getText().toString());
 
-        _myPlayerHPView     = (View) mGUIView.findViewById(R.id.game_playerhp);
-        _enemyPlayerHPView  = (View) mGUIView.findViewById(R.id.game_enemyhp);
+        _myPlayerHPView     = mGUIView.findViewById(R.id.game_playerhp);
+        _enemyPlayerHPView  = mGUIView.findViewById(R.id.game_enemyhp);
         _turnNumber         = (TextView) mGUIView.findViewById(R.id.game_turn);
-        _attackBar          = (View) mGUIView.findViewById(R.id.game_attack_bar);
+        _attackBar          = mGUIView.findViewById(R.id.game_attack_bar);
         UserInterfaceUtil.hideView(_attackBar);
     }
 
     private void setUI()
     {
-        if(_gameUI == null)
-        {
-            Log.e("setUI", "_gameUI is null");
+        if(_gameUI == null || _isSinglePlayer)
             return;
-        }
 
         if(_game.getMyPlayer()._ready && _game.getEnemyPlayer()._ready)
         {
             if(!_mediaPlayer.isPlaying())
                 _mediaPlayer.start();
-            //_gameUI.setAlpha(255);
+
+            _gameUI.setAlpha(255);
         }
         else
         {
@@ -398,17 +396,21 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
                 _mediaPlayer.pause();
                 _mediaPlayer.seekTo(0);
             }
-            //_gameUI.setAlpha(0);
+
+            _gameUI.setAlpha(0);
         }
     }
 
 
+    // When user clicked in the last turn, buttons were hidden to prevent multiple clicks
+    // So when a new turn starts, show buttons and upodate turn number
     public void updateTurn(int turn)
     {
         _turnNumber.setText(Integer.toString(turn));
         UserInterfaceUtil.showView(_attackBar);
     }
 
+    // Hide lifes as  players lose health
     public void updateHPView(boolean isOwner, int currentHp)
     {
         if(currentHp < 0)
