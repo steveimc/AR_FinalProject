@@ -1,43 +1,67 @@
 package com.vfs.augmented.activities;
 
 import android.app.Activity;
-import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.vfs.augmented.BluetoothApplication;
 import com.vfs.augmented.R;
+import com.vfs.augmented.UserInterfaceUtil;
 
-public class GameOverActivity extends Activity {
+public class GameOverActivity extends Activity
+{
+    public static final String GAME_OVER =  "gameOver";
+    String _win     = "YOU WIN!";
+    String _lose    = "YOU LOSE...";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game_over_activity);
+
+        boolean _playerWon = getIntent().getBooleanExtra(GAME_OVER, false);
+        showOutcome(_playerWon);
+        resetGame();
+    }
+
+    void resetGame()
+    {
+        // Reset the App Global variables and disconnect so a new game can be started
+        BluetoothApplication thisApp = ((BluetoothApplication)this.getApplicationContext());
+        thisApp._bluetoothController = null;
+        thisApp._game = null;
+        thisApp._enemyIsInGameActivity = false;
+    }
+
+    public void onMenuButton(View view)
+    {
+        UserInterfaceUtil.showSkullButtonClick(GameOverActivity.this, view);
+        final Intent mainIntent = new Intent(GameOverActivity.this, ConnectActivity.class);
+        this.startActivity(mainIntent);
+        this.finish();
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_game_over, menu);
-        return true;
-    }
+    void showOutcome(boolean win)
+    {
+        ImageView img = (ImageView) findViewById(R.id.gameover_image);
+        TextView text = (TextView) findViewById(R.id.gameover_text);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if(!win)
+        {
+            img.setImageResource(R.drawable.mons_gameover_lose);
+            text.setText(_lose);
         }
-
-        return super.onOptionsItemSelected(item);
+        else
+        {
+            img.setImageResource(R.drawable.mons_gameover_win);
+            text.setText(_win);
+        }
     }
 }

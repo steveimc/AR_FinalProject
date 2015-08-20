@@ -26,7 +26,7 @@ public class SelectActivity extends Activity implements BTCReceiver
     Game _game;
 
     String _playerUsername;
-    String _enemyUsername;
+    String _enemyUsername = "MonBot";
 
     Player _myPlayer;
     Player _enemyPlayer;
@@ -40,14 +40,15 @@ public class SelectActivity extends Activity implements BTCReceiver
         super.onCreate(savedInstanceState);
         setContentView(R.layout.select_activity);
 
+        _playerUsername = ((BluetoothApplication) this.getApplicationContext())._username;
         _isSinglePlayer = getIntent().getBooleanExtra(ConnectActivity.SINGLE_PLAYER, false);
-        Log.e("Single Player", ": " + _isSinglePlayer);
 
-        _btController = ((BluetoothApplication)this.getApplicationContext())._bluetoothController;
-        _btController.changeActivity(this, this);
-
-        _playerUsername = ((BluetoothApplication)this.getApplicationContext())._username;
-        _btController.sendMessage(new Packet(PacketCodes.PLAYER_NAME, _playerUsername));
+        if(!_isSinglePlayer)
+        {
+            _btController = ((BluetoothApplication) this.getApplicationContext())._bluetoothController;
+            _btController.changeActivity(this, this);
+            _btController.sendMessage(new Packet(PacketCodes.PLAYER_NAME, _playerUsername));
+        }
     }
 
     @Override
@@ -83,9 +84,12 @@ public class SelectActivity extends Activity implements BTCReceiver
     {
         if(_myPlayer == null)
         {
-            _btController.sendMessage(new Packet(PacketCodes.PICK_MONSTER, PacketCodes.MONSTER1));
             _myPlayer       = new Player(Monster.MonsterType.MONSTER_ONE);
             _enemyPlayer    = new Player(Monster.MonsterType.MONSTER_TWO);
+
+            if(!_isSinglePlayer)
+                _btController.sendMessage(new Packet(PacketCodes.PICK_MONSTER, PacketCodes.MONSTER1));
+
             createGame();
         }
     }
@@ -94,10 +98,12 @@ public class SelectActivity extends Activity implements BTCReceiver
     {
         if(_myPlayer == null)
         {
-            _btController.sendMessage(new Packet(PacketCodes.PICK_MONSTER, PacketCodes.MONSTER2));
-
             _myPlayer       = new Player(Monster.MonsterType.MONSTER_TWO);
             _enemyPlayer    = new Player(Monster.MonsterType.MONSTER_ONE);
+
+            if(!_isSinglePlayer)
+                _btController.sendMessage(new Packet(PacketCodes.PICK_MONSTER, PacketCodes.MONSTER2));
+
             createGame();
         }
     }
@@ -116,15 +122,10 @@ public class SelectActivity extends Activity implements BTCReceiver
 
     private void goToGameActivity()
     {
-        new Handler().postDelayed(new Runnable()
-        {
-            @Override
-            public void run() {
-                final Intent mainIntent = new Intent(SelectActivity.this, GameActivity.class);
-                SelectActivity.this.startActivity(mainIntent);
-                SelectActivity.this.finish();
-            }
-        }, 1000);
+        final Intent mainIntent = new Intent(SelectActivity.this, GameActivity.class);
+        mainIntent.putExtra(ConnectActivity.SINGLE_PLAYER, _isSinglePlayer);
+        SelectActivity.this.startActivity(mainIntent);
+        SelectActivity.this.finish();
     }
 
     @Override

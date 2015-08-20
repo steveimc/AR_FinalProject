@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.vfs.augmented.BluetoothApplication;
 import com.vfs.augmented.R;
+import com.vfs.augmented.UserInterfaceUtil;
 import com.vfs.augmented.bluetooth.interfaces.BTCConnectionCallback;
 import com.vfs.augmented.bluetooth.interfaces.BTCReceiver;
 import com.vfs.augmented.bluetooth.BluetoothController;
@@ -101,9 +102,6 @@ public class ConnectActivity extends Activity implements BTCReceiver, BTCConnect
         TextView text = (TextView)      acceptFightDialog.findViewById(R.id.text);
         text.setText(name + " wants to fight!");
 
-        ImageView image = (ImageView)   acceptFightDialog.findViewById(R.id.image);
-        image.setImageResource(R.drawable.ic_flash_on_black_24dp);
-
         Button dialogOK = (Button) acceptFightDialog.findViewById(R.id.dialog_button_accept);
         Button dialogNO = (Button) acceptFightDialog.findViewById(R.id.dialog_button_deny);
         // if button is clicked, close the custom dialog
@@ -112,8 +110,9 @@ public class ConnectActivity extends Activity implements BTCReceiver, BTCConnect
             @Override
             public void onClick(View v)
             {
-                acceptFightDialog.dismiss();
+                UserInterfaceUtil.showSkullButtonClick(ConnectActivity.this, v);
                 _btController.sendMessage(new Packet(PacketCodes.FIGHT_PROMPT, PacketCodes.YES));
+                acceptFightDialog.dismiss();
                 goToSelectActivity();
             }
         });
@@ -123,9 +122,10 @@ public class ConnectActivity extends Activity implements BTCReceiver, BTCConnect
             @Override
             public void onClick(View v)
             {
-                acceptFightDialog.dismiss();
+                UserInterfaceUtil.showSkullButtonClick(ConnectActivity.this, v);
                 _btController.sendMessage(new Packet(PacketCodes.FIGHT_PROMPT, PacketCodes.NO));
                 _btController.stopConnection();
+                acceptFightDialog.dismiss();
             }
         });
 
@@ -134,28 +134,16 @@ public class ConnectActivity extends Activity implements BTCReceiver, BTCConnect
 
     public void onFindPlayers(View view)
     {
-        setViewOnClick(view);
+        UserInterfaceUtil.showSkullButtonClick(this, view);
         Intent serverIntent = new Intent(this, DeviceListActivity.class);
         startActivityForResult(serverIntent, BluetoothController.REQUEST_CONNECT_DEVICE_SECURE);
     }
 
     public void onSinglePlayer(View view)
     {
-        setViewOnClick(view);
+        UserInterfaceUtil.showSkullButtonClick(this, view);
         _isSinglePlayer = true;
         goToSelectActivity();
-    }
-
-    public void setViewOnClick(final View view)
-    {
-        view.setBackground(getResources().getDrawable(R.drawable.shape_icon_skull_click));
-        new android.os.Handler().postDelayed(new Runnable() {
-            @Override
-            public void run()
-            {
-                view.setBackground(getResources().getDrawable(R.drawable.shape_icon_skull));
-            }
-        },500);
     }
 
     @Override

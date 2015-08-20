@@ -4,6 +4,37 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.vfs.augmented.activities.GameOverActivity">
+    tools:context="com.vfs.augmented.activities.GameOverActivity"
+    android:background="@drawable/gradient_radial_dark">
 
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gameover_image"
+        android:layout_marginTop="51dp"
+        android:src="@drawable/mons_gameover_lose"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="YOU LOSE"
+        android:id="@+id/gameover_text"
+        android:textColor="@color/mons_white"
+        android:textStyle="bold"
+        android:layout_below="@+id/gameover_image"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="80dp"
+        android:layout_height="60dp"
+        android:text="Menu"
+        android:id="@+id/button"
+        android:background="@drawable/shape_icon_skull"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="onMenuButton"/>
 </RelativeLayout>

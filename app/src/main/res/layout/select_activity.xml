@@ -4,36 +4,34 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
+    android:background="@drawable/gradient_radial_dark"
     tools:context="com.vfs.augmented.activities.SelectActivity">
 
     <ImageView
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:text="Monster1"
         android:id="@+id/btn_monster1"
         android:onClick="onMonster1"
         android:src="@drawable/icon_mon01_64"
-        android:background="@drawable/shape_circle"
-        android:backgroundTint="@android:color/black"
+        android:background="@drawable/shape_circle_dark"
         android:padding="20dp"
-        android:layout_above="@+id/btn_monster2"
-        android:layout_alignStart="@+id/btn_monster2"
-        android:layout_alignParentEnd="false"
-        android:layout_marginBottom="20dp" />
+        android:layout_marginTop="49dp"
+        android:layout_below="@+id/textView"
+        android:layout_alignStart="@+id/btn_monster2" />
 
     <ImageView
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:text="Monster2"
         android:id="@+id/btn_monster2"
         android:onClick="onMonster2"
         android:src="@drawable/icon_mon02_64"
-        android:background="@drawable/shape_circle"
-        android:backgroundTint="@android:color/black"
+        android:background="@drawable/shape_circle_dark"
         android:padding="20dp"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/btn_monster1"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="41dp" />
+        android:layout_marginTop="41dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -41,8 +39,9 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="PICK YOUR MONSTER"
         android:id="@+id/textView"
+        android:layout_marginTop="41dp"
+        android:textStyle="bold"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="55dp"
-        android:textStyle="bold" />
+        android:textColor="@color/mons_white" />
 </RelativeLayout>

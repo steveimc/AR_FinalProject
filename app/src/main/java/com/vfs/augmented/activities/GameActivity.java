@@ -1,5 +1,6 @@
 package com.vfs.augmented.activities;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +20,7 @@ import com.metaio.sdk.jni.TrackingValuesVector;
 import com.metaio.tools.io.AssetsManager;
 import com.vfs.augmented.BluetoothApplication;
 import com.vfs.augmented.R;
+import com.vfs.augmented.UserInterfaceUtil;
 import com.vfs.augmented.bluetooth.interfaces.BTCReceiver;
 import com.vfs.augmented.bluetooth.BluetoothController;
 import com.vfs.augmented.bluetooth.packet.Packet;
@@ -28,6 +30,7 @@ import com.vfs.augmented.game.Abilities.Moves;
 import com.vfs.augmented.game.Monster;
 
 import java.io.File;
+import java.util.Random;
 
 public class GameActivity extends ARViewActivity implements BTCReceiver
 {
@@ -38,6 +41,8 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
     public IGeometry    _myPlayerGeometry;
     public IGeometry    _enemyPlayerGeometry;
     MediaPlayer         _mediaPlayer;
+    boolean             _isSinglePlayer = false;
+    View                _attackBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -45,23 +50,32 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
 
-        _btController = ((BluetoothApplication)this.getApplicationContext())._bluetoothController;
-        _game = ((BluetoothApplication)this.getApplicationContext())._game;
-        _btController.changeActivity(this, this);
-
+        _game = ((BluetoothApplication) this.getApplicationContext())._game;
         _game.onGameActivity(this);
+        _gameUI = mGUIView;
         setupViews();
 
-        // Tell other player we are in this activity
-        _btController.sendMessage(new Packet(PacketCodes.PLAYER_IS_READY, ""));
+        _isSinglePlayer = getIntent().getBooleanExtra(ConnectActivity.SINGLE_PLAYER, false);
 
-        // If the other player is in this activity
-        if(((BluetoothApplication)this.getApplicationContext())._enemyIsInGameActivity)
+        if(!_isSinglePlayer)
+        {
+            _btController = ((BluetoothApplication) this.getApplicationContext())._bluetoothController;
+            _btController.changeActivity(this, this);
+            // Tell other player we are in this activity
+            _btController.sendMessage(new Packet(PacketCodes.PLAYER_IS_READY, ""));
+            // If the other player is in this activity
+            if(((BluetoothApplication)this.getApplicationContext())._enemyIsInGameActivity)
+                _gameCanStart = true;
+        }
+        else
+        {
             _gameCanStart = true;
+            _game.getEnemyPlayer()._ready = true;
+        }
 
         _mediaPlayer = MediaPlayer.create(GameActivity.this,R.raw.pokemon_remastered);
         _mediaPlayer.setLooping(true);
-        _gameUI = mGUIView;
+
         _game.startGame();
         //_gameUI.setAlpha(0);
     }
@@ -74,7 +88,6 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
     @Override
     protected int getGUILayout()
     {
-        Log.e("getGUILayout", "called");
         return R.layout.game_activity;
     }
 
@@ -158,14 +171,14 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
                 if(value.getState().equals(ETRACKING_STATE.ETS_FOUND) && !_game.getMyPlayer()._ready)
                 {
                     _game.getMyPlayer()._ready = true;
-                    _btController.sendMessage(new Packet(PacketCodes.PLAYER_IS_TRACKING, PacketCodes.YES));
-                    Log.e("onTacking", value.getState().toString()+ "_Enemy ready = " + _game.getEnemyPlayer()._ready);
+                    if(!_isSinglePlayer)
+                        _btController.sendMessage(new Packet(PacketCodes.PLAYER_IS_TRACKING, PacketCodes.YES));
                 }
                 else if(!value.getState().equals(ETRACKING_STATE.ETS_FOUND) && _game.getMyPlayer()._ready)
                 {
                     _game.getMyPlayer()._ready = false;
-                    _btController.sendMessage(new Packet(PacketCodes.PLAYER_IS_TRACKING,PacketCodes.NO));
-                    Log.e("onTacking", value.getState().toString() + "_Enemy ready = " + _game.getEnemyPlayer()._ready);
+                    if(!_isSinglePlayer)
+                        _btController.sendMessage(new Packet(PacketCodes.PLAYER_IS_TRACKING,PacketCodes.NO));
                 }
             }
 
@@ -192,7 +205,6 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         {
             case PacketCodes.PLAYER_IS_READY:
                 _gameCanStart = true;
-                Toast.makeText(this, "other player in. My Monster: " + _game.getMyPlayer()._monster.getId(), Toast.LENGTH_SHORT).show();
                 break;
             case PacketCodes.PLAYER_MOVE:
                 doEnemyAttack(packet.value);
@@ -203,7 +215,6 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
                 else
                     _game.getEnemyPlayer()._ready = false;
 
-                Log.e("playerIsTrackinPAcket", "enemy Ready:" + _game.getEnemyPlayer()._ready);
                 setUI();
                 break;
         }
@@ -221,31 +232,56 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
     // Comes from a local choice
     private void doPlayerAttack(Moves move)
     {
-        switch (move)
-        {
-            case ATTACK:
-                _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_ATTACK));
-                break;
-            case DEFEND:
-                _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_DEFEND));
-                break;
-            case SPECIAL:
-                _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_SPECIAL));
-                break;
-        }
-
-        //Toast.makeText(this, "Me: " + move, Toast.LENGTH_SHORT).show();
         _game.addPlayerMove(move);
 
-        // If both players are done, do turn
-        if(_game.bothPlayersSubmittedMoveForCurrentTurn())
+        if(_isSinglePlayer)
         {
+            doBotAttack();
             _game.doTurn();
         }
         else
         {
-            //  Otherwise means this player is waiting for enemys input
-            //  Hide Buttons & Show waiting in ui
+            switch (move)
+            {
+                case ATTACK:
+                    _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_ATTACK));
+                    break;
+                case DEFEND:
+                    _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_DEFEND));
+                    break;
+                case SPECIAL:
+                    _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_SPECIAL));
+                    break;
+            }
+
+            if(_game.bothPlayersSubmittedMoveForCurrentTurn())
+            {
+                // If both players are done, do turn
+                _game.doTurn();
+            }
+            else
+            {
+                //  Otherwise means this player is waiting for enemys input
+                //  Hide Buttons & Show waiting in ui
+            }
+        }
+    }
+
+    private void doBotAttack()
+    {
+        Random rand = new Random();
+        int  random = rand.nextInt(3) + 1;
+        switch (random)
+        {
+            case 1:
+                _game.addEnemyMove(Moves.ATTACK);
+                break;
+            case 2:
+                _game.addEnemyMove(Moves.DEFEND);
+                break;
+            case 3:
+                _game.addEnemyMove(Moves.SPECIAL);
+                break;
         }
     }
 
@@ -274,23 +310,37 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         }
     }
 
+    public void gameIsOver(boolean playerWon)
+    {
+        if(!_isSinglePlayer)
+            _btController.stopConnection();
+
+        final Intent mainIntent = new Intent(GameActivity.this, GameOverActivity.class);
+        mainIntent.putExtra(GameOverActivity.GAME_OVER, playerWon);
+        this.startActivity(mainIntent);
+        this.finish();
+    }
+
 ///   BUTTONS    //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
     public void onAttackButton(View view)
     {
+        UserInterfaceUtil.hideView(_attackBar);
         doPlayerAttack(Moves.ATTACK);
         popSound();
     }
 
     public void onDefenseButton(View view)
     {
+        UserInterfaceUtil.hideView(_attackBar);
         doPlayerAttack(Moves.DEFEND);
         popSound();
     }
 
     public void onSpecialButton(View view)
     {
+        UserInterfaceUtil.hideView(_attackBar);
         doPlayerAttack(Moves.SPECIAL);
         popSound();
     }
@@ -313,7 +363,6 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
     View        _enemyPlayerHPView;
     TextView    _turnNumber;
 
-
     void setupViews()
     {
         // Metaio creates a View on top of its camera with the activity xml.
@@ -330,7 +379,9 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
         _myPlayerHPView     = (View) mGUIView.findViewById(R.id.game_playerhp);
         _enemyPlayerHPView  = (View) mGUIView.findViewById(R.id.game_enemyhp);
-        _turnNumber = (TextView) mGUIView.findViewById(R.id.game_turn);
+        _turnNumber         = (TextView) mGUIView.findViewById(R.id.game_turn);
+        _attackBar          = (View) mGUIView.findViewById(R.id.game_attack_bar);
+        UserInterfaceUtil.hideView(_attackBar);
     }
 
     private void setUI()
@@ -362,10 +413,14 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
     public void updateTurn(int turn)
     {
         _turnNumber.setText(Integer.toString(turn));
+        UserInterfaceUtil.showView(_attackBar);
     }
 
     public void updateHPView(boolean isOwner, int currentHp)
     {
+        if(currentHp < 0)
+            return;
+
         if(isOwner)
         {
             _myPlayerHPView.findViewById(hpViews[currentHp]).setVisibility(View.GONE);

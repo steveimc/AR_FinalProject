@@ -18,9 +18,9 @@
         android:textSize="18dp"
         android:textStyle="bold"
         android:onClick="onFindPlayers"
-        android:layout_above="@+id/connect_button_singleplayer"
+        android:layout_below="@+id/textView2"
         android:layout_alignStart="@+id/connect_button_singleplayer"
-        android:layout_marginBottom="67dp" />
+        android:layout_marginTop="49dp" />
 
     <TextView
         android:text="SINGLE PLAYER"
@@ -33,9 +33,9 @@
         android:textSize="18dp"
         android:textStyle="bold"
         android:onClick="onSinglePlayer"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/connect_button_multiplayer"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="63dp" />
+        android:layout_marginTop="41dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -45,8 +45,8 @@
         android:id="@+id/textView2"
         android:textColor="#fffefaff"
         android:maxLines="1"
-        android:layout_above="@+id/connect_button_multiplayer"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="53dp" />
+        android:layout_marginTop="43dp" />
 
 </RelativeLayout>

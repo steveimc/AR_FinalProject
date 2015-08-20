@@ -133,7 +133,33 @@ public class Game
             myPlayerLost();
         }
 
-        nextTurn();
+        if(!isGameOver())
+        {
+            nextTurn();
+        }
+        else
+        {
+            _gameActivity.gameIsOver(didMyPlayerWin());
+        }
+
+    }
+
+    private boolean isGameOver()
+    {
+        // if one of the players has 0 life, game is over
+        if(_myPlayer.getCurrentLifes() == 0 || _enemyPlayer.getCurrentLifes() == 0)
+            return true;
+
+        return false;
+    }
+
+    private boolean didMyPlayerWin()
+    {
+        // Check who won, If this player is the one with 0 lifes, the enemy won
+        if(_myPlayer.getCurrentLifes() == 0)
+            return false;
+        else
+            return true;
     }
 
     private Player calculateTurnWinner(Moves p1Move, Moves p2Move)
