@@ -33,15 +33,16 @@ import java.util.Random;
 
 public class GameActivity extends ARViewActivity implements BTCReceiver
 {
-    BluetoothController _btController;
-    Game                _game;
-    View                _gameUI;
-    boolean             _gameCanStart = false;
-    public IGeometry    _myPlayerGeometry;
-    public IGeometry    _enemyPlayerGeometry;
-    MediaPlayer         _mediaPlayer;
-    boolean             _isSinglePlayer = false;
-    View                _attackBar;
+    private BluetoothController _btController;
+    private Game                _game;
+    private View                _gameUI;
+    private boolean             _gameCanStart = false;
+    private MediaPlayer         _mediaPlayer;
+    private boolean             _isSinglePlayer = false;
+    private View                _attackBar;
+
+    public IGeometry            _myPlayerGeometry;
+    public IGeometry            _enemyPlayerGeometry;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -107,17 +108,17 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
             // Assigning tracking configuration
             boolean result = metaioSDK.setTrackingConfiguration(trackingConfigFile);
-            MetaioDebug.log("Tracking data loaded: " + result);
-
-            // Getting a file path for a 3D geometry
-            File texture = Monster.getTextureFile(getApplicationContext(), _game.getMyPlayer()._monster.getId());
-            File texture2 = Monster.getTextureFile(getApplicationContext(), _game.getEnemyPlayer()._monster.getId());
+            //MetaioDebug.log("Tracking data loaded: " + result);
 
             metaioCallback = getMetaioSDKCallbackHandler();
             metaioSDK.registerCallback(metaioCallback);
 
+            // Getting a file path for a 3D geometry and textures
             File monsterFile1 = Monster.getModelFile(getApplicationContext(), _game.getMyPlayer()._monster.getId());
             File monsterFile2 = Monster.getModelFile(getApplicationContext(), _game.getEnemyPlayer()._monster.getId());
+
+            File texture = Monster.getTextureFile(getApplicationContext(), _game.getMyPlayer()._monster.getId());
+            File texture2 = Monster.getTextureFile(getApplicationContext(), _game.getEnemyPlayer()._monster.getId());
 
             if (monsterFile1 != null && monsterFile2 != null)
             {
@@ -125,7 +126,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
                 _myPlayerGeometry = metaioSDK.createGeometry(monsterFile1);
                 _enemyPlayerGeometry = metaioSDK.createGeometry(monsterFile2);
 
-                if (_myPlayerGeometry != null)
+                if (_myPlayerGeometry != null && _enemyPlayerGeometry != null)
                 {
                     // Set geometry properties
                     _myPlayerGeometry.setScale(20f);
@@ -184,13 +185,6 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
             setUI();
 
         }
-
-        @Override
-        public void onAnimationEnd(IGeometry geometry, String name)
-        {
-
-        }
-
     }
 
 
@@ -219,14 +213,14 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         }
     }
 
+///   GAME    //////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+
+    // Animate the geometry
     public void animate(IGeometry monsterGeometry, Monster.Range range)
     {
         monsterGeometry.startAnimationRange(range.start, range.end,range.loop);
     }
-
-
-///   GAME    //////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////
 
     // Comes from a local choice
     private void doPlayerAttack(Moves move)
@@ -301,7 +295,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
                 break;
         }
-        //Toast.makeText(this, "Enemy: " + enemyMove, Toast.LENGTH_SHORT).show();
+
         _game.addEnemyMove(enemyMove);
 
         if(_game.bothPlayersSubmittedMoveForCurrentTurn())
@@ -358,7 +352,6 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 ///   UI    //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
- 
     View        _myPlayerHPView;
     View        _enemyPlayerHPView;
     TextView    _turnNumber;
