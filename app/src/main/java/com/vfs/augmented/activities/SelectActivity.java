@@ -42,7 +42,7 @@ public class SelectActivity extends Activity implements BTCReceiver
 
         _isSinglePlayer = getIntent().getBooleanExtra(ConnectActivity.SINGLE_PLAYER, false);
         Log.e("Single Player", ": " + _isSinglePlayer);
-        
+
         _btController = ((BluetoothApplication)this.getApplicationContext())._bluetoothController;
         _btController.changeActivity(this, this);
 
