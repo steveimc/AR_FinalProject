@@ -15,7 +15,7 @@
         android:id="@+id/game_playerhp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/linearLayout"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true" />
 
     <LinearLayout
@@ -23,56 +23,47 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="bottom|center_horizontal"
-        android:background="#a5181918"
-        android:layout_alignParentBottom="true"
         android:padding="10dp"
-        android:id="@+id/linearLayout">
+        android:id="@+id/linearLayout"
+        android:layout_above="@+id/game_player_username"
+        android:layout_alignParentStart="true">
 
-    <TextView
-        android:text="A"
+    <ImageView
+        android:src="@drawable/icon_attack"
         android:id="@+id/button_attack"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:onClick="onAttackButton"
         android:background="@drawable/shape_circle"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_gravity="center_vertical"
-        android:paddingLeft="4dp"
-        android:paddingRight="3dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="8dp"
+        android:padding="10dp"
         android:gravity="center"/>
 
-    <TextView
-        android:text="D"
+    <ImageView
+        android:src="@drawable/icon_defend"
         android:id="@+id/button_defense"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:onClick="onDefenseButton"
         android:background="@drawable/shape_circle"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_gravity="center_vertical"
-        android:paddingLeft="4dp"
-        android:paddingRight="3dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="8dp"
+        android:padding="10dp"
         android:gravity="center"/>
-    <TextView
-        android:text="S"
+    <ImageView
+        android:src="@drawable/icon_magic"
         android:id="@+id/button_special"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:onClick="onSpecialButton"
         android:background="@drawable/shape_circle"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_gravity="center_vertical"
-        android:paddingLeft="4dp"
-        android:paddingRight="3dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="8dp"
+        android:padding="10dp"
         android:gravity="center" />
     </LinearLayout>
 
@@ -83,17 +74,20 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Enemy Username"
         android:id="@+id/game_enemy_username"
-        android:layout_marginStart="28dp"
+        android:textColor="@color/mons_white"
         android:layout_below="@+id/game_enemyhp"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="10dp" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Player Username"
         android:id="@+id/game_player_username"
+        android:textColor="@color/mons_white"
         android:layout_above="@+id/game_playerhp"
-        android:layout_alignEnd="@+id/game_enemy_username" />
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="10dp" />
 
     <TextView
         android:layout_width="60dp"
@@ -104,9 +98,9 @@
         android:gravity="center"
         android:textStyle="bold|italic"
         android:textSize="28dp"
-        android:layout_above="@+id/game_player_username"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="25dp"/>
+        android:layout_marginEnd="31dp"
+        android:layout_below="@+id/game_enemy_username"
+        android:layout_alignParentEnd="true" />
 
 
 </RelativeLayout>
