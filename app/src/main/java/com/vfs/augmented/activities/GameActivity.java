@@ -248,7 +248,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
                 case DEFEND:
                     _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_DEFEND));
                     break;
-                case SPECIAL:
+                case MAGIC:
                     _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_SPECIAL));
                     break;
             }
@@ -279,7 +279,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
                 _game.addEnemyMove(Moves.DEFEND);
                 break;
             case 3:
-                _game.addEnemyMove(Moves.SPECIAL);
+                _game.addEnemyMove(Moves.MAGIC);
                 break;
         }
     }
@@ -297,7 +297,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
                 enemyMove = Moves.DEFEND;
                 break;
             case PacketCodes.MOVE_SPECIAL:
-                enemyMove = Moves.SPECIAL;
+                enemyMove = Moves.MAGIC;
                 break;
         }
         //Toast.makeText(this, "Enemy: " + enemyMove, Toast.LENGTH_SHORT).show();
@@ -340,7 +340,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
     public void onSpecialButton(View view)
     {
         UserInterfaceUtil.hideView(_attackBar);
-        doPlayerAttack(Moves.SPECIAL);
+        doPlayerAttack(Moves.MAGIC);
         popSound();
     }
 

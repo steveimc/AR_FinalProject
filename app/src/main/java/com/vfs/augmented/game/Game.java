@@ -10,6 +10,8 @@ import java.util.ArrayList;
 
 /**
  * Created by andreia on 17/08/15.
+ * This class handles all the game information
+ * We create one game per system in multiplayer mode
  */
 public class Game
 {
@@ -17,8 +19,7 @@ public class Game
     private Player      _myPlayer;
     private Player      _enemyPlayer;
     private int         _currentTurn = -1;
-    ArrayList<Turn>     _turns;
-    private boolean     _hasStarted = false;
+    private ArrayList<Turn>     _turns;
 
     public class Turn
     {
@@ -29,8 +30,7 @@ public class Game
         Player winner;
     }
 
-
-
+    // Initialize a game with the two players
     public Game(Player myPlayer, Player enemyPlayer)
     {
         _myPlayer       = myPlayer;
@@ -45,7 +45,6 @@ public class Game
     // If both players are in this activity, game may start
     public void startGame()
     {
-        _hasStarted = true;
         _turns = new ArrayList<Turn>();
         nextTurn();
     }
@@ -89,10 +88,13 @@ public class Game
     {
         // Change in UI
         // Call Animations
-        _turns.get(_currentTurn).winner = calculateTurnWinner(_turns.get(_currentTurn).playerMove, _turns.get(_currentTurn).enemyMove);
-        _gameActivity.animate(_gameActivity._myPlayerGeometry,Monster.getAnimation(_turns.get(_currentTurn).playerMove));
-        _gameActivity.animate(_gameActivity._enemyPlayerGeometry,Monster.getAnimation(_turns.get(_currentTurn).enemyMove));
+        Turn currentTurn = _turns.get(_currentTurn);
 
+        currentTurn.winner = calculateTurnWinner(currentTurn.playerMove, currentTurn.enemyMove);
+        _gameActivity.animate(_gameActivity._myPlayerGeometry,Monster.getAnimation(currentTurn.playerMove));
+        _gameActivity.animate(_gameActivity._enemyPlayerGeometry,Monster.getAnimation(currentTurn.enemyMove));
+
+        // After animation is done go back to Idle
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run()
@@ -103,18 +105,6 @@ public class Game
             }
         },2000);
 
-    }
-
-    public void myPlayerWon()
-    {
-        // Show I WIN in UI
-        dealDamageToPlayer(_enemyPlayer); // Damage enemy
-    }
-
-    public void myPlayerLost()
-    {
-        // Show I LOSE in UI
-        dealDamageToPlayer(_myPlayer); // Damage my char
     }
 
     // Called when animations are done
@@ -143,7 +133,24 @@ public class Game
         {
             _gameActivity.gameIsOver(didMyPlayerWin());
         }
+    }
 
+    public void myPlayerWon()
+    {
+        // Show I WIN in UI
+        dealDamageToPlayer(_enemyPlayer); // Damage enemy
+    }
+
+    public void myPlayerLost()
+    {
+        // Show I LOSE in UI
+        dealDamageToPlayer(_myPlayer); // Damage my char
+    }
+
+    public void doTie()
+    {
+        //shows in ui
+        Toast.makeText(_gameActivity, "TIE", Toast.LENGTH_SHORT).show();
     }
 
     private boolean isGameOver()
@@ -179,7 +186,7 @@ public class Game
                     {
                         return _enemyPlayer;
                     }
-                    else if(p2Move == Moves.SPECIAL)
+                    else if(p2Move == Moves.MAGIC)
                     {
                         return _myPlayer;
                     }
@@ -189,12 +196,12 @@ public class Game
                     {
                         return _myPlayer;
                     }
-                    else if(p2Move == Moves.SPECIAL)
+                    else if(p2Move == Moves.MAGIC)
                     {
                         return _enemyPlayer;
                     }
                     break;
-                case SPECIAL:
+                case MAGIC:
                     if(p2Move == Moves.ATTACK)
                     {
                         return _enemyPlayer;
@@ -208,12 +215,6 @@ public class Game
         }
 
         return null;
-    }
-
-    public void doTie()
-    {
-        //shows in ui
-        Toast.makeText(_gameActivity, "TIE", Toast.LENGTH_SHORT).show();
     }
 
     public void dealDamageToPlayer(Player player)

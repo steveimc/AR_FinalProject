@@ -1,21 +1,20 @@
 package com.vfs.augmented.game;
 
 import android.content.Context;
-
-import com.metaio.sdk.jni.IGeometry;
 import com.metaio.tools.io.AssetsManager;
-
 import java.io.File;
 
 /**
  * Created by steveimc on 8/17/15.
+ * This class implements getters and setters according to the monster object
+ * We have the necessary monster information like life, id, animations, and files
  */
 public class Monster
 {
     private MonsterType _id;
     private int _life;
-    public IGeometry _geometry;
 
+    //This class is used to get the animations range
     public static class Range
     {
         public long start;
@@ -23,6 +22,7 @@ public class Monster
         public boolean loop;
     }
 
+    //The types of monsters available in the game
     public static enum MonsterType
     {
         NONE,
@@ -30,14 +30,16 @@ public class Monster
         MONSTER_TWO
     }
 
+    //The moves each monster has
     public static enum Moves
     {
         ATTACK,
         DEFEND,
-        SPECIAL,
+        MAGIC,
         IDLE
     }
 
+    //Initialize the monster object
     public Monster(MonsterType id, int life)
     {
         setId(id);
@@ -69,6 +71,7 @@ public class Monster
         return _life;
     }
 
+    //Return the model file depending on what the user picked
     public static File getModelFile(Context context, MonsterType id)
     {
         File modelFile;
@@ -81,6 +84,7 @@ public class Monster
         return modelFile;
     }
 
+    //Return the texture depending of the monster type
     public static File getTextureFile(Context context, MonsterType id)
     {
         File textureFile;
@@ -92,6 +96,7 @@ public class Monster
         return textureFile;
     }
 
+    //Return the frames of the animation depending on the monster move
     public static Range getAnimation(Moves move)
     {
         Range animationRange = new Range();
@@ -103,7 +108,7 @@ public class Monster
                 animationRange.end = 50;
                 animationRange.loop = true;
                 break;
-            case SPECIAL:
+            case MAGIC:
                 animationRange.start = 50;
                 animationRange.end = 100;
                 animationRange.loop = false;
