@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 
 /**
  * Created by andreia on 18/08/15.
+ * Utility class used to serialize/deserialize the packet into/from byte[]
  */
 public class PacketSerializer
 {

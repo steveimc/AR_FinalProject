@@ -18,11 +18,11 @@ import com.vfs.augmented.bluetooth.packet.PacketSerializer;
 
 /**
  * Created by andreia on 17/08/15.
+ * BluetoothController controls bluetooth to communicate with other devices through Packets
+ * - adapted from BluetoothChatFragment of the BluetoothChat Sample from Android
  */
 public class BluetoothController
 {
-    private static final String TAG = "BluetoothConnect";
-
     // Intent request codes
     public static final int REQUEST_CONNECT_DEVICE_SECURE   = 1;
     public static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
@@ -33,15 +33,15 @@ public class BluetoothController
     private BluetoothAdapter        mBluetoothAdapter = null;
 
     private BluetoothChatService    mChatService = null;
-    BTCReceiver _btcReceiver;
-    BTCConnectionCallback _connectionCallback;
 
-    Activity                        _currentActivity;
+    BTCReceiver                     _btcReceiver;
+    BTCConnectionCallback           _connectionCallback;
+    Activity                        _currentActivity;       // bluetoothController persists through activities
 
     public BluetoothController(Activity activity, BTCReceiver receiver)
     {
-        _currentActivity = activity;
-        _btcReceiver = receiver;
+        _currentActivity    = activity;
+        _btcReceiver        = receiver;
         mBluetoothAdapter   = BluetoothAdapter.getDefaultAdapter();
 
         // If the adapter is null, then Bluetooth is not supported
@@ -51,18 +51,18 @@ public class BluetoothController
         }
     }
 
-    // Update activity we're in
+    // Update activity we're in, and the new receiver
     public void changeActivity (Activity newAct, BTCReceiver newReceiver)
     {
         _currentActivity = newAct;
         _btcReceiver = newReceiver;
     }
 
+    // Is only used in the ConnectActivity
     public void addConnectionCallback(BTCConnectionCallback callback)
     {
         _connectionCallback = callback;
     }
-
 
     public void onActivityStart()
     {
@@ -74,15 +74,7 @@ public class BluetoothController
         }
         else if (mChatService == null)
         {
-            setupChat();
-        }
-    }
-
-    public void onActivityDestroyed()
-    {
-        if (mChatService != null)
-        {
-            mChatService.stop();
+            setupCommunication();
         }
     }
 
@@ -100,7 +92,7 @@ public class BluetoothController
         }
     }
 
-    public void setupChat()
+    public void setupCommunication()
     {
         // Initialize the BluetoothChatService to perform bluetooth connections
         mChatService = new BluetoothChatService(_currentActivity.getApplicationContext(), mHandler);
@@ -109,6 +101,7 @@ public class BluetoothController
         mOutStringBuffer = new StringBuffer("");
     }
 
+    // Make sure device bluetooth is discoverable
     public void ensureDiscoverable()
     {
         if (mBluetoothAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE)
@@ -119,7 +112,8 @@ public class BluetoothController
         }
     }
 
-    public void sendMessage(Packet packetToSend)
+    // Sends a packet object to the connected device
+    public void sendPacket(Packet packetToSend)
     {
         // Check that we're actually connected before trying anything
         if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED)
@@ -138,20 +132,6 @@ public class BluetoothController
             // Reset out string buffer to zero and clear the edit text field
             mOutStringBuffer.setLength(0);
         }
-    }
-
-    private void setStatus(int resId)
-    {
-        Activity activity = _currentActivity;
-        if (null == activity)
-        {
-            return;
-        }
-        final ActionBar actionBar = activity.getActionBar();
-        if (null == actionBar) {
-            return;
-        }
-        actionBar.setSubtitle(resId);
     }
 
     private void setStatus(CharSequence subTitle)
@@ -200,11 +180,11 @@ public class BluetoothController
                     break;
                 case Constants.MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
-                    // construct a string from the valid bytes in the buffer
-                    //String readMessage = new String(readBuf, 0, msg.arg1);
+                    // construct a packet from the valid bytes in the buffer
                     Packet receivedPacket = PacketSerializer.deserialize(readBuf);
                     if(receivedPacket.code == PacketCodes.PLAYER_IS_READY)
                     {
+                        // This is stored in application because we dont knoe in which activity we might receive it
                         ((BluetoothApplication) _currentActivity.getApplicationContext())._enemyIsInGameActivity = true;
                     }
                     _btcReceiver.receivePacket(receivedPacket);
@@ -231,11 +211,6 @@ public class BluetoothController
     public void stopConnection()
     {
         mChatService.stop();
-    }
-
-    public void showReceivedMessage(String msg)
-    {
-        Toast.makeText(_currentActivity, msg, Toast.LENGTH_SHORT).show();
     }
 
     /**

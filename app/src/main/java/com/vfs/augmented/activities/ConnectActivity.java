@@ -87,7 +87,7 @@ public class ConnectActivity extends Activity implements BTCReceiver, BTCConnect
     {
         if(_thisPlayerInvited)
         {
-            _btController.sendMessage(new Packet(PacketCodes.PLAYER_NAME, ((BluetoothApplication)this.getApplicationContext())._username));
+            _btController.sendPacket(new Packet(PacketCodes.PLAYER_NAME, ((BluetoothApplication) this.getApplicationContext())._username));
         }
     }
 
@@ -110,7 +110,7 @@ public class ConnectActivity extends Activity implements BTCReceiver, BTCConnect
             public void onClick(View v)
             {
                 UserInterfaceUtil.showSkullButtonClick(ConnectActivity.this, v);
-                _btController.sendMessage(new Packet(PacketCodes.FIGHT_PROMPT, PacketCodes.YES));
+                _btController.sendPacket(new Packet(PacketCodes.FIGHT_PROMPT, PacketCodes.YES));
                 acceptFightDialog.dismiss();
                 goToSelectActivity();
             }
@@ -122,7 +122,7 @@ public class ConnectActivity extends Activity implements BTCReceiver, BTCConnect
             public void onClick(View v)
             {
                 UserInterfaceUtil.showSkullButtonClick(ConnectActivity.this, v);
-                _btController.sendMessage(new Packet(PacketCodes.FIGHT_PROMPT, PacketCodes.NO));
+                _btController.sendPacket(new Packet(PacketCodes.FIGHT_PROMPT, PacketCodes.NO));
                 _btController.stopConnection();
                 acceptFightDialog.dismiss();
             }
@@ -171,7 +171,7 @@ public class ConnectActivity extends Activity implements BTCReceiver, BTCConnect
                 if (resultCode == Activity.RESULT_OK)
                 {
                     // Bluetooth is now enabled, so set up a chat session
-                    _btController.setupChat();
+                    _btController.setupCommunication();
                 }
                 else
                 {

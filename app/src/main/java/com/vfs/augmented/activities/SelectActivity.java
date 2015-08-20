@@ -45,7 +45,7 @@ public class SelectActivity extends Activity implements BTCReceiver
         {
             _btController = ((BluetoothApplication) this.getApplicationContext())._bluetoothController;
             _btController.changeActivity(this, this);
-            _btController.sendMessage(new Packet(PacketCodes.PLAYER_NAME, _playerUsername));
+            _btController.sendPacket(new Packet(PacketCodes.PLAYER_NAME, _playerUsername));
         }
     }
 
@@ -86,7 +86,7 @@ public class SelectActivity extends Activity implements BTCReceiver
             _enemyPlayer    = new Player(Monster.MonsterType.MONSTER_TWO);
 
             if(!_isSinglePlayer)
-                _btController.sendMessage(new Packet(PacketCodes.PICK_MONSTER, PacketCodes.MONSTER1));
+                _btController.sendPacket(new Packet(PacketCodes.PICK_MONSTER, PacketCodes.MONSTER1));
 
             createGame();
         }
@@ -100,7 +100,7 @@ public class SelectActivity extends Activity implements BTCReceiver
             _enemyPlayer    = new Player(Monster.MonsterType.MONSTER_ONE);
 
             if(!_isSinglePlayer)
-                _btController.sendMessage(new Packet(PacketCodes.PICK_MONSTER, PacketCodes.MONSTER2));
+                _btController.sendPacket(new Packet(PacketCodes.PICK_MONSTER, PacketCodes.MONSTER2));
 
             createGame();
         }

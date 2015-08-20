@@ -61,7 +61,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
             _btController = ((BluetoothApplication) this.getApplicationContext())._bluetoothController;
             _btController.changeActivity(this, this);
             // Tell other player we are in this activity
-            _btController.sendMessage(new Packet(PacketCodes.PLAYER_IS_READY, ""));
+            _btController.sendPacket(new Packet(PacketCodes.PLAYER_IS_READY, ""));
             // If the other player is in this activity
             if(((BluetoothApplication)this.getApplicationContext())._enemyIsInGameActivity)
                 _gameCanStart = true;
@@ -171,13 +171,13 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
                 {
                     _game.getMyPlayer()._ready = true;
                     if(!_isSinglePlayer)
-                        _btController.sendMessage(new Packet(PacketCodes.PLAYER_IS_TRACKING, PacketCodes.YES));
+                        _btController.sendPacket(new Packet(PacketCodes.PLAYER_IS_TRACKING, PacketCodes.YES));
                 }
                 else if(!value.getState().equals(ETRACKING_STATE.ETS_FOUND) && _game.getMyPlayer()._ready)
                 {
                     _game.getMyPlayer()._ready = false;
                     if(!_isSinglePlayer)
-                        _btController.sendMessage(new Packet(PacketCodes.PLAYER_IS_TRACKING,PacketCodes.NO));
+                        _btController.sendPacket(new Packet(PacketCodes.PLAYER_IS_TRACKING, PacketCodes.NO));
                 }
             }
 
@@ -243,13 +243,13 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
             switch (move)
             {
                 case ATTACK:
-                    _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_ATTACK));
+                    _btController.sendPacket(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_ATTACK));
                     break;
                 case DEFEND:
-                    _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_DEFEND));
+                    _btController.sendPacket(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_DEFEND));
                     break;
                 case MAGIC:
-                    _btController.sendMessage(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_SPECIAL));
+                    _btController.sendPacket(new Packet(PacketCodes.PLAYER_MOVE, PacketCodes.MOVE_MAGIC));
                     break;
             }
 
@@ -296,8 +296,9 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
             case PacketCodes.MOVE_DEFEND:
                 enemyMove = Moves.DEFEND;
                 break;
-            case PacketCodes.MOVE_SPECIAL:
+            case PacketCodes.MOVE_MAGIC:
                 enemyMove = Moves.MAGIC;
+
                 break;
         }
         //Toast.makeText(this, "Enemy: " + enemyMove, Toast.LENGTH_SHORT).show();

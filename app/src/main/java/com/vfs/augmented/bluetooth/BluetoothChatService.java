@@ -15,7 +15,6 @@
  */
 
 package com.vfs.augmented.bluetooth;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
@@ -37,7 +36,10 @@ import java.util.UUID;
  * incoming connections, a thread for connecting with a device, and a
  * thread for performing data transmissions when connected.
  */
-public class BluetoothChatService {
+
+// This class is part of the BluetoothChat Sample from Android
+public class BluetoothChatService
+{
     // Debugging
     private static final String TAG = "BluetoothChatService";
     // Name for the SDP record when creating server socket

@@ -16,7 +16,7 @@
 
 package com.vfs.augmented.bluetooth;
 
-/**
+/**This class is part of the BluetoothChat Sample from Android
  * Defines several constants used between {@link BluetoothChatService} and the UI.
  */
 public interface Constants {

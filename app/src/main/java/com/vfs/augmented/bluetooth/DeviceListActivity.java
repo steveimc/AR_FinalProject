@@ -15,6 +15,7 @@
  */
 
 package com.vfs.augmented.bluetooth;
+// This class is part of the BluetoothChat Sample from Android
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
