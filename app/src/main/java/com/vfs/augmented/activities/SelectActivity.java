@@ -18,18 +18,22 @@ import com.vfs.augmented.game.Game;
 import com.vfs.augmented.game.Monster;
 import com.vfs.augmented.game.Player;
 
+/*
+ * In the select activity the user chooses the monster to fight with
+ */
+
 public class SelectActivity extends Activity implements BTCReceiver
 {
-    BluetoothController _btController;
-    Game _game;
+    private BluetoothController _btController;
+    private Game _game;
 
-    String _playerUsername;
-    String _enemyUsername = "MonBot";
+    private String _playerUsername;
+    private String _enemyUsername = "MonBot"; // In case of single player mode we define a name for the enemy
 
-    Player _myPlayer;
-    Player _enemyPlayer;
+    private Player _myPlayer;
+    private Player _enemyPlayer;
 
-    boolean _isSinglePlayer;
+    private boolean _isSinglePlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -52,18 +56,24 @@ public class SelectActivity extends Activity implements BTCReceiver
     @Override
     public void receivePacket(Packet packet)
     {
+        // This method is called when the user receives a bluthoot packet
         if (_myPlayer != null)
             return;
 
-        switch (packet.code) {
+        // Create the player according to the monster picked
+        switch (packet.code)
+        {
             case PacketCodes.PICK_MONSTER:
                 {
-                    if (packet.value.equals(PacketCodes.MONSTER1)) {
+                    if (packet.value.equals(PacketCodes.MONSTER1))
+                    {
                         //Enemy picked M1
                         _myPlayer = new Player(Monster.MonsterType.MONSTER_TWO);
                         _enemyPlayer = new Player(Monster.MonsterType.MONSTER_ONE);
                         createGame();
-                    } else {
+                    }
+                    else
+                    {
                         //Enemy picked M2
                         _myPlayer = new Player(Monster.MonsterType.MONSTER_ONE);
                         _enemyPlayer = new Player(Monster.MonsterType.MONSTER_TWO);
@@ -74,12 +84,14 @@ public class SelectActivity extends Activity implements BTCReceiver
             case PacketCodes.PLAYER_NAME:
                 {
                     _enemyUsername = packet.value;
+                    break;
                 }
         }
     }
 
     public void onMonster1(View view)
     {
+        // If user picks this monster start a game with it
         if(_myPlayer == null)
         {
             _myPlayer       = new Player(Monster.MonsterType.MONSTER_ONE);
@@ -94,6 +106,7 @@ public class SelectActivity extends Activity implements BTCReceiver
 
     public void onMonster2(View view)
     {
+        // If user picks this monster start a game with it
         if(_myPlayer == null)
         {
             _myPlayer       = new Player(Monster.MonsterType.MONSTER_TWO);
@@ -108,6 +121,7 @@ public class SelectActivity extends Activity implements BTCReceiver
 
     private void createGame()
     {
+        // Create a new game and start the view
         if(_game == null)
         {
             ((BluetoothApplication) this.getApplicationContext())._game = new Game(_myPlayer, _enemyPlayer);
@@ -120,10 +134,11 @@ public class SelectActivity extends Activity implements BTCReceiver
 
     private void goToGameActivity()
     {
+        // Go to the game activity
         final Intent mainIntent = new Intent(SelectActivity.this, GameActivity.class);
         mainIntent.putExtra(ConnectActivity.SINGLE_PLAYER, _isSinglePlayer);
         SelectActivity.this.startActivity(mainIntent);
         SelectActivity.this.finish();
     }
-    
+
 }
