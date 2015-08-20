@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,6 +31,8 @@ public class SelectActivity extends Activity implements BTCReceiver
     Player _myPlayer;
     Player _enemyPlayer;
 
+    boolean _isSinglePlayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -37,6 +40,9 @@ public class SelectActivity extends Activity implements BTCReceiver
         super.onCreate(savedInstanceState);
         setContentView(R.layout.select_activity);
 
+        _isSinglePlayer = getIntent().getBooleanExtra(ConnectActivity.SINGLE_PLAYER, false);
+        Log.e("Single Player", ": " + _isSinglePlayer);
+        
         _btController = ((BluetoothApplication)this.getApplicationContext())._bluetoothController;
         _btController.changeActivity(this, this);
 

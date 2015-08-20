@@ -4,40 +4,49 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".SplashScreen"
-    android:background="#ff141414">
+    android:background="@drawable/gradient_radial_dark">
+
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:src="@drawable/mons_logo_text"
+        android:id="@+id/splash_title"
+        android:layout_below="@+id/imageView"
+        android:layout_centerHorizontal="true" />
 
     <EditText
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:id="@+id/splash_edit_text"
-        android:layout_marginBottom="138dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
         android:textColor="#ffffffff"
-        android:backgroundTint="#ffffffff" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="MONS"
-        android:id="@+id/splash_title"
-        android:layout_above="@+id/splash_edit_text"
+        android:backgroundTint="#ffffffff"
+        android:layout_below="@+id/splash_title"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="102dp"
-        android:textColor="#ffffffff"
-        android:textSize="42dp" />
+        android:layout_marginTop="26dp"
+        android:hint="Username"
+        android:textAlignment="gravity"
+        android:textColorHint="#ff555356"
+        android:gravity="center"/>
 
     <Button
-        android:layout_width="160dp"
-        android:layout_height="wrap_content"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
         android:text="START"
         android:textSize="18dp"
         android:id="@+id/splash_button_start"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="51dp"
         android:background="@drawable/shape_rect_round"
-        android:onClick="onStartButton"/>
+        android:onClick="onStartButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:src="@drawable/mons_splash"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
