@@ -1,5 +1,6 @@
 package com.vfs.augmented.activities;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -36,6 +37,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
     boolean             _gameCanStart = false;
     public IGeometry    _myPlayerGeometry;
     public IGeometry    _enemyPlayerGeometry;
+    MediaPlayer         _mediaPlayer;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -57,6 +59,8 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         if(((BluetoothApplication)this.getApplicationContext())._enemyIsInGameActivity)
             _gameCanStart = true;
 
+        _mediaPlayer = MediaPlayer.create(GameActivity.this,R.raw.pokemon_remastered);
+        _mediaPlayer.setLooping(true);
         _gameUI = mGUIView;
         _game.startGame();
         //_gameUI.setAlpha(0);
@@ -116,7 +120,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
                     _enemyPlayerGeometry.setScale(20f);
 
                     _myPlayerGeometry.setRotation(new Rotation(-30,0,0));
-                    _enemyPlayerGeometry.setRotation(new Rotation(-30,0,0));
+                    _enemyPlayerGeometry.setRotation(new Rotation(-30, 0, 0));
 
                     _myPlayerGeometry.setCoordinateSystemID(_game.getMyPlayer()._monster.getId().ordinal());
                     _enemyPlayerGeometry.setCoordinateSystemID(_game.getEnemyPlayer()._monster.getId().ordinal());
@@ -319,7 +323,6 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
     private void setUI()
     {
-        /*
         if(_gameUI == null)
         {
             Log.e("setUI", "_gameUI is null");
@@ -328,16 +331,19 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
         if(_game.getMyPlayer()._ready && _game.getEnemyPlayer()._ready)
         {
-            Log.e("setUI", "both ready. Set UI ON");
-            //_gameUI.setVisibility(View.VISIBLE);
-            _gameUI.setAlpha(255);
+            if(!_mediaPlayer.isPlaying())
+                _mediaPlayer.start();
+            //_gameUI.setAlpha(255);
         }
         else
         {
-            Log.e("setUI", "not ready. Set UI OFF");
-            //_gameUI.setVisibility(View.INVISIBLE);
-            _gameUI.setAlpha(0);
-        }*/
+            if(_mediaPlayer.isPlaying())
+            {
+                _mediaPlayer.pause();
+                _mediaPlayer.seekTo(0);
+            }
+            //_gameUI.setAlpha(0);
+        }
     }
 
 
