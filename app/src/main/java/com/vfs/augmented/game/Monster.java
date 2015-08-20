@@ -68,7 +68,7 @@ public class Monster
         if(id == MonsterType.MONSTER_ONE)
             modelFile = AssetsManager.getAssetPathAsFile(context, "models/Monster1.mfbx");
         else
-            modelFile = AssetsManager.getAssetPathAsFile(context, "models/Monster1.mfbx");
+            modelFile = AssetsManager.getAssetPathAsFile(context, "models/Monster2.mfbx");
 
         return modelFile;
     }

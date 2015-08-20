@@ -12,6 +12,7 @@ import com.metaio.sdk.MetaioDebug;
 import com.metaio.sdk.jni.ETRACKING_STATE;
 import com.metaio.sdk.jni.IGeometry;
 import com.metaio.sdk.jni.IMetaioSDKCallback;
+import com.metaio.sdk.jni.Rotation;
 import com.metaio.sdk.jni.TrackingValues;
 import com.metaio.sdk.jni.TrackingValuesVector;
 import com.metaio.tools.io.AssetsManager;
@@ -111,8 +112,11 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
                 if (_myPlayerGeometry != null)
                 {
                     // Set geometry properties
-                    _myPlayerGeometry.setScale(50f);
-                    _enemyPlayerGeometry.setScale(50f);
+                    _myPlayerGeometry.setScale(20f);
+                    _enemyPlayerGeometry.setScale(20f);
+
+                    _myPlayerGeometry.setRotation(new Rotation(-30,0,0));
+                    _enemyPlayerGeometry.setRotation(new Rotation(-30,0,0));
 
                     _myPlayerGeometry.setCoordinateSystemID(_game.getMyPlayer()._monster.getId().ordinal());
                     _enemyPlayerGeometry.setCoordinateSystemID(_game.getEnemyPlayer()._monster.getId().ordinal());
