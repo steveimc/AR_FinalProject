@@ -22,10 +22,17 @@ import com.vfs.augmented.bluetooth.DeviceListActivity;
 import com.vfs.augmented.bluetooth.packet.Packet;
 import com.vfs.augmented.bluetooth.packet.PacketCodes;
 
+/**
+ * Created by andreia on 17/08/15.
+ * Allows user to connect to other another device or choose Single Player Mode
+ * Multiplayer is the default
+ */
 public class ConnectActivity extends Activity implements BTCReceiver, BTCConnectionCallback
 {
     BluetoothController _btController;
     boolean             _thisPlayerInvited = false;
+
+    // Used to tell next activity if user chose singleplayer
     public static final String SINGLE_PLAYER = "SinglePlayer";
     private boolean     _isSinglePlayer = false;
 
@@ -36,11 +43,13 @@ public class ConnectActivity extends Activity implements BTCReceiver, BTCConnect
         super.onCreate(savedInstanceState);
         setContentView(R.layout.connect_activity);
 
+        // Get reference from application and initialize BluetoothController object
         ((BluetoothApplication)this.getApplicationContext())._bluetoothController = new BluetoothController(this, this);
         _btController = ((BluetoothApplication)this.getApplicationContext())._bluetoothController;
         _btController.onActivityStart();
         _btController.addConnectionCallback(this);
 
+        // Ensure that bluetooth is discoverable before user tries to scan devices
         _btController.ensureDiscoverable();
     }
 
@@ -51,19 +60,14 @@ public class ConnectActivity extends Activity implements BTCReceiver, BTCConnect
         _btController.onActivityResume();
     }
 
-    private void goToSelectActivity()
-    {
-        final Intent mainIntent = new Intent(ConnectActivity.this, SelectActivity.class);
-        mainIntent.putExtra(SINGLE_PLAYER, _isSinglePlayer);
-        ConnectActivity.this.startActivity(mainIntent);
-        ConnectActivity.this.finish();
-    }
 
     @Override
     public void receivePacket(Packet packet)
     {
         switch (packet.code)
         {
+            // If the other player accepted to fight, move to next activity
+            // otherwise disconnect
             case PacketCodes.FIGHT_PROMPT:
                 if(packet.value.equals(PacketCodes.YES))
                 {
@@ -74,8 +78,9 @@ public class ConnectActivity extends Activity implements BTCReceiver, BTCConnect
                     _thisPlayerInvited = false;
                     _btController.stopConnection();
                 }
-
                 break;
+            // When a connection is made we receive the name from other player
+            // and ask the user if he accepts to fight
             case PacketCodes.PLAYER_NAME:
                 askIfUserAcceptsBattle(packet.value);
                 break;
@@ -87,10 +92,15 @@ public class ConnectActivity extends Activity implements BTCReceiver, BTCConnect
     {
         if(_thisPlayerInvited)
         {
+            // When a connection is made
+            // This player name will be sent to the connected player, in order to prompt for fight
             _btController.sendPacket(new Packet(PacketCodes.PLAYER_NAME, ((BluetoothApplication) this.getApplicationContext())._username));
         }
     }
 
+    // Show a dialog that allows user to deny battle with the connected opponent
+    // Accepting will move both to SelectActivity
+    // Otherwise disconnects them
     private void askIfUserAcceptsBattle(String name)
     {
         final Dialog acceptFightDialog = new Dialog(this);
@@ -131,6 +141,7 @@ public class ConnectActivity extends Activity implements BTCReceiver, BTCConnect
         acceptFightDialog.show();
     }
 
+    // Open a list to search and choose oponent
     public void onFindPlayers(View view)
     {
         UserInterfaceUtil.showSkullButtonClick(this, view);
@@ -145,6 +156,19 @@ public class ConnectActivity extends Activity implements BTCReceiver, BTCConnect
         goToSelectActivity();
     }
 
+    private void goToSelectActivity()
+    {
+        final Intent mainIntent = new Intent(ConnectActivity.this, SelectActivity.class);
+        mainIntent.putExtra(SINGLE_PLAYER, _isSinglePlayer);
+        ConnectActivity.this.startActivity(mainIntent);
+        ConnectActivity.this.finish();
+    }
+
+
+    // When user chooses to find nearby players, it opens a DeviceListActivity
+    // which enables him do pick one. When its chosen, the result is caugth by this function
+    // which actually connects users.
+    // It tags this user as the one INVITING
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -181,64 +205,4 @@ public class ConnectActivity extends Activity implements BTCReceiver, BTCConnect
                 }
         }
     }
-
-    /////// OLD STUFF //////////////////////
-    public void onEnableDiscoveryButton(View view)
-    {
-        // Ensure this device is discoverable by others
-        _btController.ensureDiscoverable();
-    }
-
-    public void onSecureConnectButton(View view)
-    {
-        // Launch the DeviceListActivity to see devices and do scan
-        Intent serverIntent = new Intent(this, DeviceListActivity.class);
-        startActivityForResult(serverIntent, BluetoothController.REQUEST_CONNECT_DEVICE_SECURE);
-    }
-
-    public void onInsecureConnectButton(View view)
-    {
-        // Launch the DeviceListActivity to see devices and do scan
-        Intent serverIntent = new Intent(this, DeviceListActivity.class);
-        startActivityForResult(serverIntent, BluetoothController.REQUEST_CONNECT_DEVICE_INSECURE);
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.bluetooth_chat, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        switch (item.getItemId())
-        {
-            case R.id.secure_connect_scan:
-            {
-                // Launch the DeviceListActivity to see devices and do scan
-                Intent serverIntent = new Intent(this, DeviceListActivity.class);
-                startActivityForResult(serverIntent, BluetoothController.REQUEST_CONNECT_DEVICE_SECURE);
-                return true;
-            }
-            case R.id.insecure_connect_scan:
-            {
-                // Launch the DeviceListActivity to see devices and do scan
-                Intent serverIntent = new Intent(this, DeviceListActivity.class);
-                startActivityForResult(serverIntent, BluetoothController.REQUEST_CONNECT_DEVICE_INSECURE);
-                return true;
-            }
-            case R.id.discoverable:
-            {
-                // Ensure this device is discoverable by others
-                _btController.ensureDiscoverable();
-                return true;
-            }
-        }
-        return false;
-    }
-
 }

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 /**
  * Created by andreia on 17/08/15.
  * This class handles all the game information
- * We create one game per system in multiplayer mode
+ * We create one game clone per device in multiplayer mode
  */
 public class Game
 {
