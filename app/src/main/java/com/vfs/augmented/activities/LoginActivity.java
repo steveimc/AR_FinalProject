@@ -9,7 +9,10 @@ import android.widget.EditText;
 
 import com.vfs.augmented.BluetoothApplication;
 import com.vfs.augmented.R;
-
+/**
+ * Created by andreia on 17/08/15.
+ * Allows user to insert a username to display to others
+ */
 
 public class LoginActivity extends Activity
 {
@@ -21,14 +24,17 @@ public class LoginActivity extends Activity
         setContentView(R.layout.login_activity);
     }
 
+    // On start button click get username, store it, and move to connect activity
     public void onStartButton(View view)
     {
         EditText editText = (EditText) findViewById(R.id.splash_edit_text);
         String username = editText.getText().toString();
-        if(username.length() > 1)
-            ((BluetoothApplication)this.getApplicationContext())._username = username;
 
-        goToConnectActivity();
+        if(username.length() > 1)
+        {
+            ((BluetoothApplication) this.getApplicationContext())._username = username;
+            goToConnectActivity();
+        }
     }
 
     void goToConnectActivity()
