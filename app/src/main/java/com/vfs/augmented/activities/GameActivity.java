@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.metaio.sdk.ARViewActivity;
 import com.metaio.sdk.MetaioDebug;
@@ -87,9 +88,10 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
         _mediaPlayer = MediaPlayer.create(GameActivity.this,R.raw.pokemon_remastered);
         _mediaPlayer.setLooping(true);
+        _mediaPlayer.setVolume(0.5f,0.5f);
 
         tryStartGame();
-        _gameUI.setAlpha(0);
+        mGUIView.setAlpha(0);
     }
 
 ///   METAIO    //////////////////////////////////////////////////////////////////
@@ -195,7 +197,6 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
             }
 
             setUI();
-
         }
     }
 
@@ -314,6 +315,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         if(!_isSinglePlayer)
             _btController.stopConnection();
 
+        _mediaPlayer.stop();
         final Intent mainIntent = new Intent(GameActivity.this, GameOverActivity.class);
         mainIntent.putExtra(GameOverActivity.GAME_OVER, playerWon);
         this.startActivity(mainIntent);
@@ -325,6 +327,10 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
     public void onAttackButton(View view)
     {
+        if(_attackBar.getAlpha() == 0)
+        {
+            return;
+        }
         UserInterfaceUtil.hideView(_attackBar);
         doPlayerAttack(Moves.ATTACK);
         popSound();
@@ -332,6 +338,10 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
     public void onDefenseButton(View view)
     {
+        if(_attackBar.getAlpha() == 0)
+        {
+            return;
+        }
         UserInterfaceUtil.hideView(_attackBar);
         doPlayerAttack(Moves.DEFEND);
         popSound();
@@ -339,6 +349,10 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
     public void onSpecialButton(View view)
     {
+        if(_attackBar.getAlpha() == 0)
+        {
+            return;
+        }
         UserInterfaceUtil.hideView(_attackBar);
         doPlayerAttack(Moves.MAGIC);
         popSound();
@@ -379,7 +393,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
     private void setUI()
     {
-        if(_gameUI == null || _isSinglePlayer)
+        if(_gameUI == null)
             return;
 
         if(_game.getMyPlayer()._ready && _game.getEnemyPlayer()._ready)
@@ -391,6 +405,7 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
         }
         else
         {
+            Toast.makeText(this, "Make sure you are tracking correctly in order to play.", Toast.LENGTH_LONG).show();
             if(_mediaPlayer.isPlaying())
             {
                 _mediaPlayer.pause();
@@ -403,14 +418,14 @@ public class GameActivity extends ARViewActivity implements BTCReceiver
 
 
     // When user clicked in the last turn, buttons were hidden to prevent multiple clicks
-    // So when a new turn starts, show buttons and upodate turn number
+    // So when a new turn starts, show buttons and update turn number
     public void updateTurn(int turn)
     {
         _turnNumber.setText(Integer.toString(turn));
         UserInterfaceUtil.showView(_attackBar);
     }
 
-    // Hide lifes as  players lose health
+    // Hide lifes as players lose health
     public void updateHPView(boolean isOwner, int currentHp)
     {
         if(currentHp < 0)

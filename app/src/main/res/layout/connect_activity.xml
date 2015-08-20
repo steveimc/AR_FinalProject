@@ -20,7 +20,8 @@
         android:onClick="onFindPlayers"
         android:layout_below="@+id/textView2"
         android:layout_alignStart="@+id/connect_button_singleplayer"
-        android:layout_marginTop="49dp" />
+        android:layout_marginTop="49dp"
+        android:textColor="#ff000000" />
 
     <TextView
         android:text="SINGLE PLAYER"
@@ -35,7 +36,8 @@
         android:onClick="onSinglePlayer"
         android:layout_below="@+id/connect_button_multiplayer"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="41dp" />
+        android:layout_marginTop="41dp"
+        android:textColor="#ff000000" />
 
     <TextView
         android:layout_width="wrap_content"

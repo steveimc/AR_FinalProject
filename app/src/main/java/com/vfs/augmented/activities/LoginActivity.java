@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.vfs.augmented.BluetoothApplication;
 import com.vfs.augmented.R;
@@ -30,10 +31,14 @@ public class LoginActivity extends Activity
         EditText editText = (EditText) findViewById(R.id.splash_edit_text);
         String username = editText.getText().toString();
 
-        if(username.length() > 1)
+        if(username.length() >= 4 && username.length() <= 18)
         {
             ((BluetoothApplication) this.getApplicationContext())._username = username;
             goToConnectActivity();
+        }
+        else
+        {
+            Toast.makeText(this, "Username must have 4 to 18 characters", Toast.LENGTH_SHORT).show();
         }
     }
 

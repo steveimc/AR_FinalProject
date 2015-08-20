@@ -148,17 +148,19 @@ public class Game
 
     public void myPlayerWon()
     {
+        Toast.makeText(_gameActivity, "You Won the Turn", Toast.LENGTH_SHORT).show();
         dealDamageToPlayer(_enemyPlayer); // Damage enemy
     }
 
     public void myPlayerLost()
     {
+        Toast.makeText(_gameActivity, "You Lost the Turn", Toast.LENGTH_SHORT).show();
         dealDamageToPlayer(_myPlayer); // Damage my char
     }
 
     public void doTie()
     {
-        Toast.makeText(_gameActivity, "TIE", Toast.LENGTH_SHORT).show();
+        Toast.makeText(_gameActivity, "It's a Tie!", Toast.LENGTH_SHORT).show();
     }
 
     private boolean isGameOver()
